@@ -610,7 +610,7 @@ def run_network(model_type, X_train, test_bags, y_train, channel = 5, window_siz
     #   predictions.append(max(pred))
     return pred
 
-def run_ideepm(model_type = 'CNN', local = True, ensemble = False):
+def run_ideepm(model_type = 'CNN', local = True, ensemble = True):
     data_dir = './GraphProt_CLIP_sequences/'
     #trids =  get_6_trids()
     #ordict = read_rna_dict()
