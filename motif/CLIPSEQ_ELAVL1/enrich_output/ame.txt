@@ -1,0 +1,25 @@
+AME (Analysis of Motif Enrichment): Compiled on May 16 2017 at 17:24:55
+------------------------------
+Copyright (c) Robert McLeay <r.mcleay@imb.uq.edu.au> & Timothy Bailey <t.bailey@imb.uq.edu.au>, 2009.
+
+Command line
+ame --control shuff_seq -o motif/CLIPSEQ_ELAVL1/enrich_output seq_enrich motif/CLIPSEQ_ELAVL1/filters_meme.txt
+
+Not in partition maximization mode. Fixing partition at the number of primary sequences (1000).
+
+Threshold p-value for reporting results: 0.05
+Motif p-values are corrected by #Motifs * #ThresholdsTested - (16 * 1 = 16)
+
+1. Fisher's exact test p-value of motif filter0  (UKUKUBY) top 1000 seqs: 1.813e-40 (Corrected p-value: 2.9e-39)
+2. Fisher's exact test p-value of motif filter5  (KUUUKUU) top 1000 seqs: 3.02e-37 (Corrected p-value: 4.832e-36)
+3. Fisher's exact test p-value of motif filter2  (UUWWUUW) top 1000 seqs: 5.246e-35 (Corrected p-value: 8.394e-34)
+4. Fisher's exact test p-value of motif filter8  (UUWWWUU) top 1000 seqs: 3.81e-28 (Corrected p-value: 6.096e-27)
+5. Fisher's exact test p-value of motif filter9  (RRADWDD) top 1000 seqs: 3.396e-25 (Corrected p-value: 5.433e-24)
+6. Fisher's exact test p-value of motif filter4  (YHWUYYY) top 1000 seqs: 3.627e-21 (Corrected p-value: 5.803e-20)
+7. Fisher's exact test p-value of motif filter7  (WKDDRGN) top 1000 seqs: 7.813e-13 (Corrected p-value: 1.25e-11)
+8. Fisher's exact test p-value of motif filter13  (DAAAANH) top 1000 seqs: 3.493e-08 (Corrected p-value: 5.589e-07)
+9. Fisher's exact test p-value of motif filter14  (WDKKDRV) top 1000 seqs: 7.074e-08 (Corrected p-value: 1.132e-06)
+10. Fisher's exact test p-value of motif filter12  (WWUKNNV) top 1000 seqs: 1.005e-05 (Corrected p-value: 0.0001608)
+11. Fisher's exact test p-value of motif filter3  (WWHUWBD) top 1000 seqs: 0.0001866 (Corrected p-value: 0.002982)
+12. Fisher's exact test p-value of motif filter6  (NUBHHDK) top 1000 seqs: 0.0006094 (Corrected p-value: 0.009706)
+13. Fisher's exact test p-value of motif filter1  (UUHNGGR) top 1000 seqs: 0.002783 (Corrected p-value: 0.04361)

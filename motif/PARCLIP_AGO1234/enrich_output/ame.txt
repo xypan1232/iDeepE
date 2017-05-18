@@ -1,0 +1,19 @@
+AME (Analysis of Motif Enrichment): Compiled on May 16 2017 at 17:24:55
+------------------------------
+Copyright (c) Robert McLeay <r.mcleay@imb.uq.edu.au> & Timothy Bailey <t.bailey@imb.uq.edu.au>, 2009.
+
+Command line
+ame --control shuff_seq -o motif/PARCLIP_AGO1234/enrich_output seq_enrich motif/PARCLIP_AGO1234/filters_meme.txt
+
+Not in partition maximization mode. Fixing partition at the number of primary sequences (1000).
+
+Threshold p-value for reporting results: 0.05
+Motif p-values are corrected by #Motifs * #ThresholdsTested - (16 * 1 = 16)
+
+1. Fisher's exact test p-value of motif filter0  (KUUUUUU) top 1000 seqs: 1.792e-16 (Corrected p-value: 2.868e-15)
+2. Fisher's exact test p-value of motif filter13  (WDDVHHW) top 1000 seqs: 5.344e-09 (Corrected p-value: 8.551e-08)
+3. Fisher's exact test p-value of motif filter7  (HHMMRRR) top 1000 seqs: 1.368e-07 (Corrected p-value: 2.189e-06)
+4. Fisher's exact test p-value of motif filter10  (HYBNNAA) top 1000 seqs: 1.499e-06 (Corrected p-value: 2.398e-05)
+5. Fisher's exact test p-value of motif filter2  (HWWUWHH) top 1000 seqs: 3.889e-06 (Corrected p-value: 6.222e-05)
+6. Fisher's exact test p-value of motif filter14  (VVNHWDD) top 1000 seqs: 0.0001447 (Corrected p-value: 0.002313)
+7. Fisher's exact test p-value of motif filter1  (VMHHHHN) top 1000 seqs: 0.0003009 (Corrected p-value: 0.004804)

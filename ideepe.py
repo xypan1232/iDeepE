@@ -1,0 +1,675 @@
+import sys
+import os
+import numpy as np
+import pdb
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.autograd import Variable
+from torch.utils.data import DataLoader, TensorDataset
+
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.metrics import roc_curve, auc, roc_auc_score
+import random
+import gzip
+import pickle
+import timeit
+from seq_motifs import get_motif
+
+if torch.cuda.is_available():
+        cuda = True
+        #torch.cuda.set_device(1)
+        print('===> Using GPU')
+else:
+        cuda = False
+        print('===> Using CPU')
+        
+def padding_sequence_new(seq, max_len = 101, repkey = 'N'):
+    seq_len = len(seq)
+    new_seq = seq
+    if seq_len < max_len:
+        gap_len = max_len -seq_len
+        new_seq = seq + repkey * gap_len
+    return new_seq
+
+def read_rna_dict(rna_dict = 'rna_dict'):
+    odr_dict = {}
+    with open(rna_dict, 'r') as fp:
+        for line in fp:
+            values = line.rstrip().split(',')
+            for ind, val in enumerate(values):
+                val = val.strip()
+                odr_dict[val] = ind
+    
+    return odr_dict
+
+def padding_sequence(seq, max_len = 501, repkey = 'N'):
+    seq_len = len(seq)
+    if seq_len < max_len:
+        gap_len = max_len -seq_len
+        new_seq = seq + repkey * gap_len
+    else:
+        new_seq = seq[:max_len]
+    return new_seq
+
+def get_RNA_seq_concolutional_array(seq, motif_len = 4):
+    seq = seq.replace('U', 'T')
+    alpha = 'ACGT'
+    #for seq in seqs:
+    #for key, seq in seqs.iteritems():
+    row = (len(seq) + 2*motif_len - 2)
+    new_array = np.zeros((row, 4))
+    for i in range(motif_len-1):
+        new_array[i] = np.array([0.25]*4)
+    
+    for i in range(row-3, row):
+        new_array[i] = np.array([0.25]*4)
+        
+    #pdb.set_trace()
+    for i, val in enumerate(seq):
+        i = i + motif_len-1
+        if val not in 'ACGT':
+            new_array[i] = np.array([0.25]*4)
+            continue
+        #if val == 'N' or i < motif_len or i > len(seq) - motif_len:
+        #    new_array[i] = np.array([0.25]*4)
+        #else:
+        try:
+            index = alpha.index(val)
+            new_array[i][index] = 1
+        except:
+            pdb.set_trace()
+        #data[key] = new_array
+    return new_array
+
+def split_overlap_seq(seq):
+    window_size = 101
+    overlap_size = 20
+    #pdb.set_trace()
+    bag_seqs = []
+    seq_len = len(seq)
+    if seq_len >= window_size:
+        num_ins = (seq_len - 101)/(window_size - overlap_size) + 1
+        remain_ins = (seq_len - 101)%(window_size - overlap_size)
+    else:
+        num_ins = 0
+    bag = []
+    end = 0
+    for ind in range(num_ins):
+        start = end - overlap_size
+        if start < 0:
+            start = 0
+        end = start + window_size
+        subseq = seq[start:end]
+        bag_seqs.append(subseq)
+    if num_ins == 0:
+        seq1 = seq
+        pad_seq = padding_sequence_new(seq1)
+        bag_seqs.append(pad_seq)
+    else:
+        if remain_ins > 10:
+            #pdb.set_trace()
+            #start = len(seq) -window_size
+            seq1 = seq[-window_size:]
+            pad_seq = padding_sequence_new(seq1)
+            bag_seqs.append(pad_seq)
+    return bag_seqs
+
+def read_seq_graphprot(seq_file, label = 1):
+    seq_list = []
+    labels = []
+    seq = ''
+    with open(seq_file, 'r') as fp:
+        for line in fp:
+            if line[0] == '>':
+                name = line[1:-1]
+            else:
+                seq = line[:-1].upper()
+                seq = seq.replace('T', 'U')
+                seq_list.append(seq)
+                labels.append(label)
+    
+    return seq_list, labels
+
+def get_RNA_concolutional_array(seq, motif_len = 4):
+    seq = seq.replace('U', 'T')
+    alpha = 'ACGT'
+    #for seq in seqs:
+    #for key, seq in seqs.iteritems():
+    row = (len(seq) + 2*motif_len - 2)
+    new_array = np.zeros((row, 4))
+    for i in range(motif_len-1):
+        new_array[i] = np.array([0.25]*4)
+    
+    for i in range(row-3, row):
+        new_array[i] = np.array([0.25]*4)
+        
+    #pdb.set_trace()
+    for i, val in enumerate(seq):
+        i = i + motif_len-1
+        if val not in 'ACGT':
+            new_array[i] = np.array([0.25]*4)
+            continue
+        try:
+            index = alpha.index(val)
+            new_array[i][index] = 1
+        except:
+            pdb.set_trace()
+        #data[key] = new_array
+    return new_array
+
+def load_graphprot_data(protein, train = True, path = './GraphProt_CLIP_sequences/'):
+    data = dict()
+    tmp = []
+    listfiles = os.listdir(path)
+    
+    key = '.train.'
+    if not train:
+        key = '.ls.'
+    mix_label = []
+    mix_seq = []
+    mix_structure = []    
+    for tmpfile in listfiles:
+        if protein not in tmpfile:
+            continue
+        if key in tmpfile:
+            if 'positive' in tmpfile:
+                label = 1
+            else:
+                label = 0
+            seqs, labels = read_seq_graphprot(os.path.join(path, tmpfile), label = label)
+            #pdb.set_trace()
+            mix_label = mix_label + labels
+            mix_seq = mix_seq + seqs
+    
+    data["seq"] = mix_seq
+    data["Y"] = np.array(mix_label)
+    
+    return data
+
+def loaddata_graphprot(protein, train = True, ushuffle = True):
+    #pdb.set_trace()
+    data = load_graphprot_data(protein, train = train)
+    label = data["Y"]
+    rna_array = []
+    #trids = get_6_trids()
+    #nn_dict = read_rna_dict()
+    for rna_seq in data["seq"]:
+        #rna_seq = rna_seq_dict[rna]
+        rna_seq = rna_seq.replace('T', 'U')
+        
+        seq_array = get_RNA_seq_concolutional_array(seq)
+        #tri_feature = get_6_nucleotide_composition(trids, rna_seq_pad, nn_dict)
+        rna_array.append(seq_array)
+    
+    return np.array(rna_array), label
+
+def get_bag_data(data):
+    bags = []
+    seqs = data["seq"]
+    labels = data["Y"]
+    for seq in seqs:
+        #pdb.set_trace()
+        bag_seqs = split_overlap_seq(seq)
+        #flat_array = []
+        bag_subt = []
+        for bag_seq in bag_seqs:
+            tri_fea = get_RNA_seq_concolutional_array(bag_seq)
+            bag_subt.append(tri_fea.T)
+        num_of_ins = len(bag_subt)
+        
+        if num_of_ins >5:
+            start = (num_of_ins - 5)/2
+            bag_subt = bag_subt[start: start + 5]
+        if len(bag_subt) <5:
+            rand_more = 5 - len(bag_subt)
+            for ind in range(rand_more):
+                bag_subt.append(random.choice(bag_subt))
+        
+        bags.append(np.array(bag_subt))
+    
+        
+    return bags, labels
+    #for data in pairs.iteritems():
+    #    ind1 = trids.index(key)
+    #    emd_weight1 = embedding_rna_weights[ord_dict[str(ind1)]]
+
+def get_bag_data_1_channel(data):
+    bags = []
+    seqs = data["seq"]
+    labels = data["Y"]
+    for seq in seqs:
+        #pdb.set_trace()
+        #bag_seqs = split_overlap_seq(seq)
+        bag_seq = padding_sequence(seq)
+        #flat_array = []
+        bag_subt = []
+        #for bag_seq in bag_seqs:
+        tri_fea = get_RNA_seq_concolutional_array(bag_seq)
+        bag_subt.append(tri_fea.T)
+
+        
+        bags.append(np.array(bag_subt))
+    
+        
+    return bags, labels
+
+def batch(tensor, batch_size):
+    tensor_list = []
+    length = tensor.shape[0]
+    i = 0
+    while True:
+        if (i+1) * batch_size >= length:
+            tensor_list.append(tensor[i * batch_size: length])
+            return tensor_list
+        tensor_list.append(tensor[i * batch_size: (i+1) * batch_size])
+        i += 1
+
+class Estimator(object):
+
+    def __init__(self, model):
+        self.model = model
+
+    def compile(self, optimizer, loss):
+        self.optimizer = optimizer
+        self.loss_f = loss
+
+    def _fit(self, train_loader):
+        """
+        train one epoch
+        """
+        loss_list = []
+        acc_list = []
+    	for idx, (X, y) in enumerate(train_loader):
+            #for X, y in zip(X_train, y_train):
+            #X_v = Variable(torch.from_numpy(X.astype(np.float32)))
+             #y_v = Variable(torch.from_numpy(np.array(ys)).long())
+    	    X_v = Variable(X)
+    	    y_v = Variable(y)
+            if cuda:
+                X_v = X_v.cuda()
+                y_v = y_v.cuda()
+                
+            self.optimizer.zero_grad()
+            y_pred = self.model(X_v)
+            loss = self.loss_f(y_pred, y_v)
+            loss.backward()
+            self.optimizer.step()
+
+            ## for log
+            loss_list.append(loss.data[0])
+
+        return sum(loss_list) / len(loss_list)
+
+    def fit(self, X, y, batch_size=32, nb_epoch=10, validation_data=()):
+        #X_list = batch(X, batch_size)
+        #y_list = batch(y, batch_size)
+        #pdb.set_trace()
+        print X.shape
+        train_set = TensorDataset(torch.from_numpy(X.astype(np.float32)),
+                              torch.from_numpy(y.astype(np.float32)).long().view(-1))
+        train_loader = DataLoader(dataset=train_set, batch_size=batch_size, shuffle=True)
+        self.model.train()
+        for t in range(nb_epoch):
+            loss = self._fit(train_loader)
+            print loss
+            #rint("Epoch %s/%s loss: %06.4f - acc: %06.4f %s" % (t, nb_epoch, loss, acc, val_log))
+
+    def evaluate(self, X, y, batch_size=32):
+        
+        y_pred = self.predict(X)
+
+        y_v = Variable(torch.from_numpy(y).long(), requires_grad=False)
+        if cuda:
+            y_v = y_v.cuda()
+        loss = self.loss_f(y_pred, y_v)
+        predict = y_pred.data.cpu().numpy()[:, 1].flatten()
+        auc = roc_auc_score(y, predict)
+        #lasses = torch.topk(y_pred, 1)[1].data.numpy().flatten()
+        #cc = self._accuracy(classes, y)
+        return loss.data[0], auc
+
+    def _accuracy(self, y_pred, y):
+        return float(sum(y_pred == y)) / y.shape[0]
+
+    def predict(self, X):
+        X = Variable(torch.from_numpy(X.astype(np.float32)))
+        if cuda:
+            X= X.cuda()        
+        y_pred = self.model(X)
+        return y_pred        
+
+    def predict_proba( X):
+        return self.model.predict_proba(X)
+        
+class CNN(nn.Module):
+    def __init__(self, nb_filter, channel = 5, num_classes = 2, kernel_size = (4, 10), pool_size = (1, 3), labcounts = 32, window_size = 12, hidden_size = 200, stride = (1, 1), padding = 0):
+        super(CNN, self).__init__()
+        self.layer1 = nn.Sequential(
+            nn.Conv2d(channel, nb_filter, kernel_size, stride = stride, padding = padding),
+            nn.BatchNorm2d(nb_filter),
+            nn.ReLU(),
+            nn.MaxPool2d(pool_size, stride = stride))
+        out1_size = (window_size + 2*padding - (kernel_size[1] - 1) - 1)/stride[1] + 1
+        maxpool_size = (out1_size + 2*padding - (pool_size[1] - 1) - 1)/stride[1] + 1
+        self.layer2 = nn.Sequential(
+            nn.Conv2d(nb_filter, nb_filter, kernel_size = (1, 10), stride = stride, padding = padding),
+            nn.BatchNorm2d(nb_filter),
+            nn.ReLU(),
+            nn.MaxPool2d(pool_size, stride = stride))
+        out2_size = (maxpool_size + 2*padding - (kernel_size[1] - 1) - 1)/stride[1] + 1
+        maxpool2_size = (out2_size + 2*padding - (pool_size[1] - 1) - 1)/stride[1] + 1
+        self.drop1 = nn.Dropout(p=0.5)
+	print 'maxpool_size', maxpool_size
+        self.fc1 = nn.Linear(maxpool2_size*nb_filter, hidden_size)
+        self.drop2 = nn.Dropout(p=0.5)
+        self.relu1 = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_size, num_classes)
+        
+    def forward(self, x):
+        out = self.layer1(x)
+        out = self.layer2(out)
+        out = out.view(out.size(0), -1)
+        out = self.drop1(out)
+        out = self.fc1(out)
+        out = self.drop2(out)
+        out = self.relu1(out)
+        out = self.fc2(out)
+        out = F.sigmoid(out)
+        return out
+
+    def layer1out(self, x):
+        if type(x) is np.ndarray:
+            x = torch.from_numpy(x.astype(np.float32))
+        x = Variable(x)
+        if cuda:
+            x = x.cuda()
+        out = self.layer1(x)
+        temp = out.data.cpu().numpy()
+        return temp
+    
+    def predict_proba(self, x):
+        if type(x) is np.ndarray:
+            x = torch.from_numpy(x.astype(np.float32))
+        x = Variable(x)
+        if cuda:
+            x = x.cuda()
+        y = self.forward(x)
+        temp = y.data.cpu().numpy()
+        return temp[:, 1]
+    
+class CNN_LSTM(nn.Module):
+    def __init__(self, nb_filter, channel = 5, num_classes = 2, kernel_size = (4, 10), pool_size = (1, 3), labcounts = 32, window_size = 12, hidden_size = 200, stride = (1, 1), padding = 0, num_layers = 2):
+        super(CNN_LSTM, self).__init__()
+        self.layer1 = nn.Sequential(
+            nn.Conv2d(channel, nb_filter, kernel_size, stride = stride, padding = padding),
+            nn.BatchNorm2d(nb_filter),
+            nn.ReLU(),
+            nn.MaxPool2d(pool_size, stride = stride))
+        self.num_layers = num_layers
+        self.hidden_size = hidden_size
+        out1_size = (window_size + 2*padding - (kernel_size[1] - 1) - 1)/stride[1] + 1
+        maxpool_size = (out1_size + 2*padding - (pool_size[1] - 1) - 1)/stride[1] + 1
+        self.downsample = nn.Conv2d(nb_filter, 1, kernel_size = (1, 10), stride = stride, padding = padding)
+        input_size = (maxpool_size + 2*padding - (kernel_size[1] - 1) - 1)/stride[1] + 1
+        self.layer2 = nn.LSTM(input_size, hidden_size, num_layers, batch_first = True, bidirectional=True)
+        self.drop1 = nn.Dropout(p=0.5)
+        self.fc1 = nn.Linear(2*hidden_size, hidden_size)
+        self.drop2 = nn.Dropout(p=0.5)
+        self.relu1 = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_size, num_classes)
+        
+    def forward(self, x):
+        out = self.layer1(x)
+        out = self.downsample(out)
+        out = torch.squeeze(out, 1)
+        #pdb.set_trace()
+        if cuda:
+            x = x.cuda()
+            h0 = Variable(torch.zeros(self.num_layers*2, out.size(0), self.hidden_size)).cuda() 
+            c0 = Variable(torch.zeros(self.num_layers*2, out.size(0), self.hidden_size)).cuda()
+        else:
+            h0 = Variable(torch.zeros(self.num_layers*2, out.size(0), self.hidden_size)) 
+            c0 = Variable(torch.zeros(self.num_layers*2, out.size(0), self.hidden_size))
+        out, _  = self.layer2(out, (h0, c0))
+        out = out[:, -1, :]
+        #pdb.set_trace()
+        out = self.drop1(out)
+        out = self.fc1(out)
+        out = self.drop2(out)
+        out = self.relu1(out)
+        out = self.fc2(out)
+        out = F.sigmoid(out)
+        return out
+
+    def layer1out(self, x):
+        if type(x) is np.ndarray:
+            x = torch.from_numpy(x.astype(np.float32))
+        x = Variable(x)
+        if cuda:
+            x = x.cuda()
+        out = self.layer1(x)
+        temp = out.data.cpu().numpy()
+        return temp
+        
+    def predict_proba(self, x):
+        if type(x) is np.ndarray:
+            x = torch.from_numpy(x.astype(np.float32))
+        x = Variable(x)
+        if cuda:
+            x = x.cuda()
+        y = self.forward(x)
+        temp = y.data.cpu().numpy()
+        return temp[:, 1]
+
+def convR(in_channels, out_channels, kernel_size, stride=1, padding = (0, 1)):
+    return nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, 
+                     padding=padding, stride=stride, bias=False)
+
+# Residual Block
+class ResidualBlock(nn.Module):
+    def __init__(self, in_channel, nb_filter = 16, kernel_size = (1, 3), stride=1, downsample=None):
+        super(ResidualBlock, self).__init__()
+        self.conv1 = convR(in_channel, nb_filter, kernel_size = kernel_size, stride = stride)
+        self.bn1 = nn.BatchNorm2d(nb_filter)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = convR(nb_filter, nb_filter, kernel_size = kernel_size, stride = stride)
+        self.bn2 = nn.BatchNorm2d(nb_filter)
+        self.downsample = downsample
+        
+    def forward(self, x):
+        residual = x
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+        out = self.conv2(out)
+        out = self.bn2(out)
+        if self.downsample:
+            residual = self.downsample(x)
+        out += residual
+        out = self.relu(out)
+        return out
+
+# ResNet Module
+class ResNet(nn.Module):
+    def __init__(self, block, layers, nb_filter = 16, channel = 5, labcounts = 12, window_size = 36, kernel_size = (1, 3), pool_size = (1, 3), num_classes=2, hidden_size = 200):
+        super(ResNet, self).__init__()
+        self.in_channels = channel
+        self.conv = convR(self.in_channels, nb_filter, kernel_size = (4, 10))
+        cnn1_size = window_size - 7
+        self.bn = nn.BatchNorm2d(nb_filter)
+        self.relu = nn.ReLU(inplace=True)
+        self.layer1 = self.make_layer(block, nb_filter, layers[0],  kernel_size = kernel_size)
+        self.layer2 = self.make_layer(block, nb_filter*2, layers[1], 1, kernel_size = kernel_size, in_channels = nb_filter)
+        self.layer3 = self.make_layer(block, nb_filter*4, layers[2], 1, kernel_size = kernel_size, in_channels = 2*nb_filter)
+        self.avg_pool = nn.AvgPool2d(pool_size)
+        avgpool2_1_size = (cnn1_size - (pool_size[1] - 1) - 1)/pool_size[1] + 1
+        last_layer_size = 4*nb_filter*avgpool2_1_size
+        self.fc = nn.Linear(last_layer_size, hidden_size)
+        self.drop2 = nn.Dropout(p=0.5)
+        self.relu1 = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_size, num_classes)
+        
+    def make_layer(self, block, out_channels, blocks, stride=1,  kernel_size = (1, 10), in_channels = 16):
+        downsample = None
+        if (stride != 1) or (in_channels != out_channels):
+            downsample = nn.Sequential(
+                convR(in_channels, out_channels, kernel_size = kernel_size, stride=stride),
+                nn.BatchNorm2d(out_channels))
+        layers = []
+        layers.append(block(in_channels, out_channels, kernel_size = kernel_size, stride = stride, downsample = downsample))
+        #self.in_channels = out_channels
+        for i in range(1, blocks):
+            layers.append(block(out_channels, out_channels, kernel_size = kernel_size))
+        return nn.Sequential(*layers)
+     
+    def forward(self, x):
+        #print x.data.cpu().numpy().shape
+        #x = x.view(x.size(0), 1, x.size(1), x.size(2))
+        out = self.conv(x)
+        out = self.bn(out)
+        out = self.relu(out)
+        out = self.layer1(out)
+        #pdb.set_trace()
+        #print self.layer2
+        out = self.layer2(out)
+        out = self.layer3(out)
+        out = self.avg_pool(out)
+        #pdb.set_trace()
+        out = out.view(out.size(0), -1)
+        out = self.fc(out)
+        out = self.drop2(out)
+        out = self.relu1(out)
+        out = self.fc2(out)
+        out = F.sigmoid(out)
+        return out
+
+    def layer1out(self, x):
+        if type(x) is np.ndarray:
+            x = torch.from_numpy(x.astype(np.float32))
+        x = Variable(x)
+        if cuda:
+            x = x.cuda()
+        out = self.conv(x)
+        temp = y.data.cpu().numpy()
+        return temp
+        
+    def predict_proba(self, x):
+        if type(x) is np.ndarray:
+            x = torch.from_numpy(x.astype(np.float32))
+        x = Variable(x)
+        if cuda:
+            x = x.cuda()
+        y = self.forward(x)
+        temp = y.data.cpu().numpy()
+        return temp[:, 1]
+    
+def get_all_data(protein, channel = 5):
+    
+    data = load_graphprot_data(protein)
+    test_data = load_graphprot_data(protein, train = False)
+    #pdb.set_trace()
+    if channel == 1:
+        train_bags, label = get_bag_data_1_channel(data)
+        test_bags, true_y = get_bag_data_1_channel(test_data) 
+    else:
+        train_bags, label = get_bag_data(data)
+    #pdb.set_trace()
+        test_bags, true_y = get_bag_data(test_data) 
+    
+    return train_bags, label, test_bags, true_y
+
+def run_network(model_type, X_train, test_bags, y_train, channel = 5, window_size = 107):
+    print 'model training for ', model_type
+    #nb_epos= 5
+    if model_type == 'CNN':
+        model = CNN(nb_filter = 16, labcounts = 4, window_size = window_size, channel = channel)
+    elif model_type == 'CNNLSTM':
+        model = CNN_LSTM(nb_filter = 16, labcounts = 4, window_size = window_size, channel = channel)
+    elif model_type == 'ResNet':
+        model = ResNet(ResidualBlock, [3, 3, 3], nb_filter = 16, labcounts = 4, window_size = 107)
+    else:
+        print 'only support CNN, CNN-LSTM and ResNet model'
+    #model = RNN(INPUT_SIZE, HIDDEN_SIZE, 2, class_size)
+    #pdb.set_trace()
+    if cuda:
+        model = model.cuda()
+    clf = Estimator(model)
+    clf.compile(optimizer=torch.optim.Adam(model.parameters(), lr=1e-4),
+                loss=nn.CrossEntropyLoss())
+    clf.fit(X_train, y_train, batch_size=100, nb_epoch=50)
+    
+    print 'predicting'         
+    #predictions = []
+    #for testing in test_bags:
+        #pdb.set_trace()
+    pred = model.predict_proba(test_bags)
+	#pdb.set_trace()
+    #   predictions.append(max(pred))
+    return pred
+
+def run_ideepm(model_type = 'CNN', local = True, ensemble = False):
+    data_dir = './GraphProt_CLIP_sequences/'
+    #trids =  get_6_trids()
+    #ordict = read_rna_dict()
+    #embedded_rna_dim, embedding_rna_weights, n_nucl_symbols = get_embed_dim_new('rnaEmbedding25.pickle')
+    
+    finished_protein = set()
+    start_time = timeit.default_timer()
+    if local:
+        window_size = 107
+    	channel = 5
+        lotext = 'local'
+    else:
+        window_size = 507
+        channel = 1
+        lotext = 'global'
+    if ensemble:
+        outputfile = lotext + '_result_adam_ensemble_' + model_type
+    else:
+        outputfile = lotext + '_result_adam_individual_' + model_type
+        
+    fw = open(outputfile, 'w')
+    
+    for protein in os.listdir(data_dir):
+        protein = protein.split('.')[0]
+    	if protein in finished_protein:
+                continue
+        finished_protein.add(protein)
+        print protein
+        fw.write(protein + '\t')
+        
+        
+        #net =  set_cnn_model()
+        
+        #seq_auc, seq_predict = calculate_auc(seq_net)
+        hid = 16
+        if not ensemble:
+            train_bags, train_labels, test_bags, test_labels = get_all_data(protein, channel = channel)
+            predict = run_network(model_type, np.array(train_bags), np.array(test_bags), np.array(train_labels), channel = channel, window_size = window_size)
+        else:
+	    print 'ensembling'
+            train_bags, train_labels, test_bags, test_labels = get_all_data(protein, channel = 1)
+            predict1 = run_network(model_type, np.array(train_bags), np.array(test_bags), np.array(train_labels), channel = 1, window_size = 507)
+            train_bags, train_labels, test_bags, test_labels = [], [], [], []
+            train_bags, train_labels, test_bags, test_labels = get_all_data(protein, channel = 5)
+            predict2 = run_network(model_type, np.array(train_bags), np.array(test_bags), np.array(train_labels), channel = 5, window_size = 107)
+            predict = (predict1 + predict2)/2.0
+            train_bags, train_labels, test_bags = [], [], []
+        
+        auc = roc_auc_score(test_labels, predict)
+        print 'AUC:', auc
+        fw.write(str(auc) + '\n')
+        mylabel = "\t".join(map(str, test_labels))
+        myprob = "\t".join(map(str, predict))  
+        fw.write(mylabel + '\n')
+        fw.write(myprob + '\n')
+    fw.close()
+    end_time = timeit.default_timer()
+    print "Training final took: %.2f s" % (end_time - start_time)
+
+model_type = sys.argv[1]
+run_ideepm(model_type)
+
