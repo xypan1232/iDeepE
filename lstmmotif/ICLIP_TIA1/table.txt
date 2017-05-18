@@ -1,0 +1,17 @@
+               consensus  annotation     ic    mean     std
+0             UAGUGUGUCA           .   0.88  0.4860  0.4959
+1             GCCCGUAGCG           .   0.24  0.5139  0.5238
+2             CGCGGUUGAG           .   1.60  0.5281  0.5474
+3             UGGAAUAGGA           .   1.48  0.5352  0.5566
+4             GGUACGGAUA           .   0.74  0.5341  0.5595
+5             CACGGAACGA           .   1.47  0.5370  0.5570
+6             UUACAGAUAA           .   1.65  0.5356  0.5582
+7             CGGAGAAGUA           .   1.67  0.5361  0.5592
+8             AGUUUCAGGG           .   2.47  0.5373  0.5626
+9             GCAGUUUCCC           .   0.72  0.5393  0.5633
+10            CCAGGGCAAC           .   0.61  0.5414  0.5632
+11            GGUUACGGUC           .   1.81  0.5451  0.5681
+12            AGCGUUCAAG           .   1.79  0.5424  0.5646
+13            AUUUUUACGU         HuR   2.91  0.5411  0.5655
+14            AGUUUUACGG           .   3.86  0.5394  0.5629
+15            AUGUUUUAUC         HuR   3.70  0.5387  0.5622
