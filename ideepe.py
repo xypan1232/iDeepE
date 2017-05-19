@@ -16,7 +16,9 @@ import random
 import gzip
 import pickle
 import timeit
-from seq_motifs import get_motif
+#from seq_motifs import get_motif
+import argparse
+#from sklearn.externals import joblib
 
 if torch.cuda.is_available():
         cuda = True
@@ -84,15 +86,15 @@ def get_RNA_seq_concolutional_array(seq, motif_len = 4):
         #data[key] = new_array
     return new_array
 
-def split_overlap_seq(seq):
-    window_size = 101
+def split_overlap_seq(seq, window_size = 101):
+    
     overlap_size = 20
     #pdb.set_trace()
     bag_seqs = []
     seq_len = len(seq)
     if seq_len >= window_size:
-        num_ins = (seq_len - 101)/(window_size - overlap_size) + 1
-        remain_ins = (seq_len - 101)%(window_size - overlap_size)
+        num_ins = (seq_len - window_size)/(window_size - overlap_size) + 1
+        remain_ins = (seq_len - window_size)%(window_size - overlap_size)
     else:
         num_ins = 0
     bag = []
@@ -113,7 +115,7 @@ def split_overlap_seq(seq):
             #pdb.set_trace()
             #start = len(seq) -window_size
             seq1 = seq[-window_size:]
-            pad_seq = padding_sequence_new(seq1)
+            pad_seq = padding_sequence_new(seq1, max_len = window_size)
             bag_seqs.append(pad_seq)
     return bag_seqs
 
@@ -206,13 +208,13 @@ def loaddata_graphprot(protein, train = True, ushuffle = True):
     
     return np.array(rna_array), label
 
-def get_bag_data(data):
+def get_bag_data(data, channel = 5, window_size = 101):
     bags = []
     seqs = data["seq"]
     labels = data["Y"]
     for seq in seqs:
         #pdb.set_trace()
-        bag_seqs = split_overlap_seq(seq)
+        bag_seqs = split_overlap_seq(seq, window_size = window_size)
         #flat_array = []
         bag_subt = []
         for bag_seq in bag_seqs:
@@ -220,11 +222,11 @@ def get_bag_data(data):
             bag_subt.append(tri_fea.T)
         num_of_ins = len(bag_subt)
         
-        if num_of_ins >5:
-            start = (num_of_ins - 5)/2
-            bag_subt = bag_subt[start: start + 5]
-        if len(bag_subt) <5:
-            rand_more = 5 - len(bag_subt)
+        if num_of_ins >channel:
+            start = (num_of_ins - channel)/2
+            bag_subt = bag_subt[start: start + channel]
+        if len(bag_subt) <channel:
+            rand_more = channel - len(bag_subt)
             for ind in range(rand_more):
                 bag_subt.append(random.choice(bag_subt))
         
@@ -236,14 +238,14 @@ def get_bag_data(data):
     #    ind1 = trids.index(key)
     #    emd_weight1 = embedding_rna_weights[ord_dict[str(ind1)]]
 
-def get_bag_data_1_channel(data):
+def get_bag_data_1_channel(data, max_len = 501):
     bags = []
     seqs = data["seq"]
     labels = data["Y"]
     for seq in seqs:
         #pdb.set_trace()
         #bag_seqs = split_overlap_seq(seq)
-        bag_seq = padding_sequence(seq)
+        bag_seq = padding_sequence(seq, max_len = max_len)
         #flat_array = []
         bag_subt = []
         #for bag_seq in bag_seqs:
@@ -565,21 +567,6 @@ class ResNet(nn.Module):
         y = self.forward(x)
         temp = y.data.cpu().numpy()
         return temp[:, 1]
-    
-def get_all_data(protein, channel = 5):
-    
-    data = load_graphprot_data(protein)
-    test_data = load_graphprot_data(protein, train = False)
-    #pdb.set_trace()
-    if channel == 1:
-        train_bags, label = get_bag_data_1_channel(data)
-        test_bags, true_y = get_bag_data_1_channel(test_data) 
-    else:
-        train_bags, label = get_bag_data(data)
-    #pdb.set_trace()
-        test_bags, true_y = get_bag_data(test_data) 
-    
-    return train_bags, label, test_bags, true_y
 
 def run_network(model_type, X_train, test_bags, y_train, channel = 5, window_size = 107):
     print 'model training for ', model_type
@@ -602,15 +589,10 @@ def run_network(model_type, X_train, test_bags, y_train, channel = 5, window_siz
     clf.fit(X_train, y_train, batch_size=100, nb_epoch=50)
     
     print 'predicting'         
-    #predictions = []
-    #for testing in test_bags:
-        #pdb.set_trace()
     pred = model.predict_proba(test_bags)
-	#pdb.set_trace()
-    #   predictions.append(max(pred))
-    return pred
+    return pred, model
 
-def run_ideepm(model_type = 'CNN', local = True, ensemble = True):
+def run_ideepe_on_graphprot(model_type = 'CNN', local = False, ensemble = False):
     data_dir = './GraphProt_CLIP_sequences/'
     #trids =  get_6_trids()
     #ordict = read_rna_dict()
@@ -620,7 +602,7 @@ def run_ideepm(model_type = 'CNN', local = True, ensemble = True):
     start_time = timeit.default_timer()
     if local:
         window_size = 107
-    	channel = 5
+        channel = 5
         lotext = 'local'
     else:
         window_size = 507
@@ -635,22 +617,17 @@ def run_ideepm(model_type = 'CNN', local = True, ensemble = True):
     
     for protein in os.listdir(data_dir):
         protein = protein.split('.')[0]
-    	if protein in finished_protein:
+        if protein in finished_protein:
                 continue
         finished_protein.add(protein)
         print protein
         fw.write(protein + '\t')
-        
-        
-        #net =  set_cnn_model()
-        
-        #seq_auc, seq_predict = calculate_auc(seq_net)
         hid = 16
         if not ensemble:
             train_bags, train_labels, test_bags, test_labels = get_all_data(protein, channel = channel)
-            predict = run_network(model_type, np.array(train_bags), np.array(test_bags), np.array(train_labels), channel = channel, window_size = window_size)
+            predict = run_network(model_type, np.array(train_bags), np.array(test_bags), np.array(train_labels), protein, channel = channel, window_size = window_size)
         else:
-	    print 'ensembling'
+            print 'ensembling'
             train_bags, train_labels, test_bags, test_labels = get_all_data(protein, channel = 1)
             predict1 = run_network(model_type, np.array(train_bags), np.array(test_bags), np.array(train_labels), channel = 1, window_size = 507)
             train_bags, train_labels, test_bags, test_labels = [], [], [], []
@@ -670,6 +647,183 @@ def run_ideepm(model_type = 'CNN', local = True, ensemble = True):
     end_time = timeit.default_timer()
     print "Training final took: %.2f s" % (end_time - start_time)
 
-model_type = sys.argv[1]
-run_ideepm(model_type)
+def read_data_file(posifile, negafile = None, train = True):
+    data = dict()
+    seqs, labels = read_seq_graphprot(posifile, label = 1)
+    if negafile:
+        seqs2, labels2 = read_seq_graphprot(negafile, label = 0)
+        seqs = seqs + seqs2
+        labels = labels + labels2
+        
+    data["seq"] = seqs
+    data["Y"] = np.array(labels)
+    
+    return data
+
+def get_data(posi, nega = None, channel = 5,  window_size = 101, train = True):
+    data = read_data_file(posi, nega, train = train)
+    if channel == 1:
+        train_bags, label = get_bag_data_1_channel(data, max_len = window_size)
+
+    else:
+        train_bags, label = get_bag_data(data, channel = channel, window_size = window_size)
+    
+    return train_bags, label
+
+def train_network(model_type, X_train, y_train, channel = 5, window_size = 107, model_file = 'model.pkl', batch_size = 100, n_epochs = 50, num_filters = 16):
+    print 'model training for ', model_type
+    #nb_epos= 5
+    if model_type == 'CNN':
+        model = CNN(nb_filter =num_filters, labcounts = 4, window_size = window_size, channel = channel)
+    elif model_type == 'CNNLSTM':
+        model = CNN_LSTM(nb_filter = num_filters, labcounts = 4, window_size = window_size, channel = channel)
+    elif model_type == 'ResNet':
+        model = ResNet(ResidualBlock, [3, 3, 3], nb_filter = num_filters, labcounts = 4, channel = channel , window_size = window_size)
+    else:
+        print 'only support CNN, CNN-LSTM and ResNet model'
+
+    if cuda:
+        model = model.cuda()
+    clf = Estimator(model)
+    clf.compile(optimizer=torch.optim.Adam(model.parameters(), lr=1e-4),
+                loss=nn.CrossEntropyLoss())
+    clf.fit(X_train, y_train, batch_size=batch_size, nb_epoch=n_epochs)
+    
+    torch.save(model.state_dict(), model_file)
+    #print 'predicting'         
+    #pred = model.predict_proba(test_bags)
+    #return model
+
+def predict_network(model_type, X_test, channel = 5, window_size = 107, model_file = 'model.pkl', batch_size = 100, n_epochs = 50, num_filters = 16):
+    print 'model training for ', model_type
+    #nb_epos= 5
+    if model_type == 'CNN':
+        model = CNN(nb_filter =num_filters, labcounts = 4, window_size = window_size, channel = channel)
+    elif model_type == 'CNNLSTM':
+        model = CNN_LSTM(nb_filter = num_filters, labcounts = 4, window_size = window_size, channel = channel)
+    elif model_type == 'ResNet':
+        model = ResNet(ResidualBlock, [3, 3, 3], nb_filter = num_filters, labcounts = 4, channel = channel , window_size = window_size)
+    else:
+        print 'only support CNN, CNN-LSTM and ResNet model'
+
+    if cuda:
+        model = model.cuda()
+                
+    model.load_state_dict(torch.load(model_file))
+    pred = model.predict_proba(X_test)
+    return pred
+        
+def run_ideepe(parser):
+    #data_dir = './GraphProt_CLIP_sequences/'
+    posi = parser.posi
+    nega = parser.nega
+    model_type = parser.model_type
+    ensemble = parser.ensemble
+    out_file = parser.out_file
+    train = parser.train
+    model_file = parser.model_file
+    predict = parser.predict
+    max_size = parser.maxsize
+    channel = parser.channel
+    local = parser.local
+    window_size = parser.window_size
+    ensemble = parser.ensemble
+    batch_size = parser.batch_size
+    n_epochs = parser.n_epochs
+    num_filters = parser.num_filters
+    testfile = parser.testfile
+    glob = parser.glob
+    start_time = timeit.default_timer()
+    #pdb.set_trace()    
+    if local:
+        #window_size = window_size + 6
+    	channel = channel
+        ensemble = False
+        #lotext = 'local'
+    elif glob:
+        #window_size = maxsize + 6
+        channel = 1
+        ensemble = False
+        window_size = max_size
+        #lotext = 'global'
+    #if local and ensemble:
+    #	ensemble = False
+	
+    if predict:
+	train = False
+        if testfile == '':
+            print 'you need specify the fasta file for predicting when predict is True'
+            return
+    if train:
+        if posi == '' or nega == '':
+            print 'you need specify the training positive and negative fasta file for training when train is True'
+            return
+    
+    if train:
+        if not ensemble:
+            train_bags, train_labels = get_data(posi, nega, channel = channel, window_size = window_size)
+            model = train_network(model_type, np.array(train_bags), np.array(train_labels), channel = channel, window_size = window_size + 6,
+                                         model_file = model_file, batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters)
+        else:
+            print 'ensembling'
+            train_bags, train_labels = get_data(posi, nega, channel = 1, window_size = max_size)
+            model = train_network(model_type, np.array(train_bags), np.array(train_labels), channel = 1, window_size = max_size + 6,
+                                         model_file = model_file + '.global', batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters)
+            train_bags, train_labels = [], []
+            train_bags, train_labels = get_data(posi, nega, channel = 5, window_size = window_size)
+            model = train_network(model_type, np.array(train_bags), np.array(train_labels), channel = 5, window_size = window_size + 6,
+                                        model_file = model_file + '.local', batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters)
+
+            
+            end_time = timeit.default_timer()
+            print "Training final took: %.2f s" % (end_time - start_time)
+    elif predict:
+        fw = open(out_file, 'w')
+        if not ensemble:
+            X_test, X_labels = get_data(testfile, nega = None, channel = channel, window_size = window_size)
+            predict = predict_network(model_type, np.array(X_test), channel = channel, window_size = window_size + 6, model_file = model_file, batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters)
+        else:
+            X_test, X_labels = get_data(testfile, nega = None, channel = 1, window_size = max_size)
+            predict1 = predict_network(model_type, np.array(X_test), channel = 1, window_size = max_size + 6, model_file = model_file+ '.global', batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters)
+            X_test, X_labels = get_data(testfile, nega = None, channel = 5, window_size = window_size)
+            predict2 = predict_network(model_type, np.array(X_test), channel = 5, window_size = window_size + 6, model_file = model_file+ '.local', batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters)
+                        
+            predict = (predict1 + predict2)/2.0
+	#pdb.set_trace()
+        #auc = roc_auc_score(X_labels, predict)
+        #print auc        
+        myprob = "\t".join(map(str, predict))  
+        fw.write(myprob + '\n')
+        fw.close()
+    else:
+        print 'please specify that you want to train the mdoel or predict for your own sequences'
+
+
+def parse_arguments(parser):
+    parser.add_argument('--posi', type=str, metavar='<postive_sequecne_file>', help='The fasta file of positive training samples')
+    parser.add_argument('--nega', type=str, metavar='<negative_sequecne_file>', help='The fasta file of negative training samples')
+    parser.add_argument('--model_type', type=str, default='CNN', help='it supports the following 3 deep network model: CNN, CNN-LSTM, ResNet, default model is CNN')
+    parser.add_argument('--out_file', type=str, default='prediction.txt', help='The output file used to store the prediction probability of the testing sequences')
+    parser.add_argument('--train', type=bool, default=True, help='The path to the Pickled file containing durations between visits of patients. If you are not using duration information, do not use this option')
+    parser.add_argument('--model_file', type=str, default='model.pkl', help='The file to save model parameters. Use this option if you want to train on your sequences or predict for your sequences')
+    parser.add_argument('--predict', type=bool, default=False,  help='Predicting the RNA-protein binding sites for your input sequences, if using train, then it will be False')
+    parser.add_argument('--testfile', type=str, default='',  help='the test fast file for sequences you want to predict for, you need specify it when using predict')
+    parser.add_argument('--maxsize', type=int, default=501, help='For global sequences, you need specify the maxmimum size to padding all sequences, it is only for global CNNs (default value: 501)')
+    parser.add_argument('--channel', type=int, default=5, help='The number of channels for breaking the entire RNA sequences to multiple subsequences, you can specify this value only for local CNNs (default value: 5)')
+    parser.add_argument('--window_size', type=int, default=101, help='The window size used to break the entire sequences when using local CNNs, eahc subsequence has this specified window size, default 101')
+    parser.add_argument('--local', type=bool, default=False, help='Only local multiple channel CNNs for local subsequences')
+    parser.add_argument('--glob', type=bool, default=False, help='Only global multiple channel CNNs for local subsequences')
+    parser.add_argument('--ensemble', type=bool, default=True, help='It runs the ensembling of local and global CNNs, you need specify the maxsize (default 501) for global CNNs and window_size (default: 101) for local CNNs')
+    parser.add_argument('--batch_size', type=int, default=100, help='The size of a single mini-batch (default value: 100)')
+    parser.add_argument('--num_filters', type=int, default=16, help='The number of filters for CNNs (default value: 16)')
+    parser.add_argument('--n_epochs', type=int, default=50, help='The number of training epochs (default value: 50)')
+
+    args = parser.parse_args()
+    return args
+
+parser = argparse.ArgumentParser()
+args = parse_arguments(parser)
+print args
+#model_type = sys.argv[1]
+run_ideepe(args)
 
