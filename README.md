@@ -8,9 +8,10 @@ Sklearn (https://github.com/scikit-learn/scikit-learn)
 # Data 
 Download the trainig and testing data from http://www.bioinf.uni-freiburg.de/Software/GraphProt/GraphProt_CLIP_sequences.tar.bz2 and compress it in current dir. It has 24 experiments of 21 RBPs, and we need train one model per experiment.
 
+# Supported models
 Now it supports GPUs and 3 models, including CNNs, CNN-LSTM and ResNet, they can be trained using local CNNs and global CNNs, and alos ensembling of local and global CNNs.
 
-#Usage:
+# Usage:
 python ideepe.py [-h] [--posi <postive_sequecne_file>] <br>
                  [--nega <negative_sequecne_file>] [--model_type MODEL_TYPE] <br>
                  [--out_file OUT_FILE] [--train TRAIN] <br>
