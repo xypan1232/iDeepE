@@ -1,7 +1,12 @@
-#DeepE: Inferring RNA-protein binding sites and motifs using local and global convolutional neural network
+# iDeepE: Inferring RNA-protein binding sites and motifs using local and global convolutional neural network
  
+# Dependency:
+PyTorch 0.1.11 (http://pytorch.org/ ) <br>
+Sklearn (https://github.com/scikit-learn/scikit-learn)
 
-Download the trainig and testing data from http://www.bioinf.uni-freiburg.de/Software/GraphProt/GraphProt_CLIP_sequences.tar.bz2 and compress it in current dir.
+
+# Data 
+Download the trainig and testing data from http://www.bioinf.uni-freiburg.de/Software/GraphProt/GraphProt_CLIP_sequences.tar.bz2 and compress it in current dir. It has 24 experiments of 21 RBPs, and we need train one model per experiment.
 
 Now it supports GPUs and 3 models, including CNNs, CNN-LSTM and ResNet, they can be trained using local CNNs and global CNNs, and alos ensembling of local and global CNNs.
 
@@ -27,5 +32,3 @@ For ensembling models, it will save 'model.pkl.local' and 'model.pkl.global' for
 # step 2:
 2. python ideepe.py --testfile=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.ls.positives.fa --model_type=CNN --model_file=model.pkl --predict=True 
 <br>
-The testfile is your input sequences, and the model_file should be consist with the name used for trainig, and the predictions socre for all sequences will be default saved to 'prediction.txt' <br>
- 
