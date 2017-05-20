@@ -22,8 +22,8 @@ You first need train the model, then the trained models is used to predict for y
 # step 1:
 1. python ideepe.py --posi=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.positives.fa --nega=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.negatives.fa --model_type=CNN --model_file=model.pkl --train=True 
 <br>
-For ensembling models, it will save 'model.pkl.local' and 'model.pkl.global' for local and global CNNs, respectively.
-<br>
+For ensembling models, it will save 'model.pkl.local' and 'model.pkl.global' for local and global CNNs, respectively.<br>
+
 # step 2:
 2. python ideepe.py --testfile=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.ls.positives.fa --model_type=CNN --model_file=model.pkl --predict=True 
 <br>
