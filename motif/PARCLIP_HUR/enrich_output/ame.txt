@@ -5,16 +5,24 @@ Copyright (c) Robert McLeay <r.mcleay@imb.uq.edu.au> & Timothy Bailey <t.bailey@
 Command line
 ame --control shuff_seq -o motif/PARCLIP_HUR/enrich_output seq_enrich motif/PARCLIP_HUR/filters_meme.txt
 
-Not in partition maximization mode. Fixing partition at the number of primary sequences (1000).
+Not in partition maximization mode. Fixing partition at the number of primary sequences (238888).
 
 Threshold p-value for reporting results: 0.05
 Motif p-values are corrected by #Motifs * #ThresholdsTested - (16 * 1 = 16)
 
-1. Fisher's exact test p-value of motif filter15  (WWUUUUW) top 1000 seqs: 6.516e-20 (Corrected p-value: 1.042e-18)
-2. Fisher's exact test p-value of motif filter14  (UUUUUUU) top 1000 seqs: 1.109e-17 (Corrected p-value: 1.775e-16)
-3. Fisher's exact test p-value of motif filter10  (WUUUUUD) top 1000 seqs: 3.286e-17 (Corrected p-value: 5.258e-16)
-4. Fisher's exact test p-value of motif filter6  (GGGGVVM) top 1000 seqs: 8.331e-06 (Corrected p-value: 0.0001333)
-5. Fisher's exact test p-value of motif filter13  (GNNNHHH) top 1000 seqs: 5.813e-05 (Corrected p-value: 0.0009297)
-6. Fisher's exact test p-value of motif filter4  (VRGVNNN) top 1000 seqs: 6.773e-05 (Corrected p-value: 0.001083)
-7. Fisher's exact test p-value of motif filter2  (WRRGDNN) top 1000 seqs: 0.0002957 (Corrected p-value: 0.00472)
-8. Fisher's exact test p-value of motif filter8  (HWRRVHH) top 1000 seqs: 0.0006082 (Corrected p-value: 0.009687)
+1. Fisher's exact test p-value of motif filter1  (UYYHHNG) top 238888 seqs: 0 (Corrected p-value: 0)
+2. Fisher's exact test p-value of motif filter3  (WWWWUUW) top 238888 seqs: 0 (Corrected p-value: 0)
+3. Fisher's exact test p-value of motif filter4  (CCYBBSC) top 238888 seqs: 0 (Corrected p-value: 0)
+4. Fisher's exact test p-value of motif filter5  (RNMWWDD) top 238888 seqs: 0 (Corrected p-value: 0)
+5. Fisher's exact test p-value of motif filter7  (HWWUYYH) top 238888 seqs: 0 (Corrected p-value: 0)
+6. Fisher's exact test p-value of motif filter12  (YYYHWWY) top 238888 seqs: 0 (Corrected p-value: 0)
+7. Fisher's exact test p-value of motif filter14  (UUUUUWU) top 238888 seqs: 0 (Corrected p-value: 0)
+8. Fisher's exact test p-value of motif filter15  (RRRWWUK) top 238888 seqs: 0 (Corrected p-value: 0)
+9. Fisher's exact test p-value of motif filter10  (BGSNBKS) top 238888 seqs: 5.497e-233 (Corrected p-value: 8.795e-232)
+10. Fisher's exact test p-value of motif filter9  (KUKBSMH) top 238888 seqs: 3.592e-172 (Corrected p-value: 5.747e-171)
+11. Fisher's exact test p-value of motif filter11  (HHRDVHN) top 238888 seqs: 4.621e-168 (Corrected p-value: 7.393e-167)
+12. Fisher's exact test p-value of motif filter13  (DNDGGDW) top 238888 seqs: 3.325e-159 (Corrected p-value: 5.321e-158)
+13. Fisher's exact test p-value of motif filter0  (DDKDDRG) top 238888 seqs: 1.348e-154 (Corrected p-value: 2.156e-153)
+14. Fisher's exact test p-value of motif filter8  (KKDWWKK) top 238888 seqs: 5.933e-139 (Corrected p-value: 9.493e-138)
+15. Fisher's exact test p-value of motif filter2  (VGRRRNW) top 238888 seqs: 2.181e-119 (Corrected p-value: 3.49e-118)
+16. Fisher's exact test p-value of motif filter6  (RKGNBHW) top 238888 seqs: 1.527e-116 (Corrected p-value: 2.443e-115)

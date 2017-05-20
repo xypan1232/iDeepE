@@ -5,12 +5,18 @@ Copyright (c) Robert McLeay <r.mcleay@imb.uq.edu.au> & Timothy Bailey <t.bailey@
 Command line
 ame --control shuff_seq -o motif/C17ORF85_Baltz2012/enrich_output seq_enrich motif/C17ORF85_Baltz2012/filters_meme.txt
 
-Not in partition maximization mode. Fixing partition at the number of primary sequences (411).
+Not in partition maximization mode. Fixing partition at the number of primary sequences (3709).
 
 Threshold p-value for reporting results: 0.05
 Motif p-values are corrected by #Motifs * #ThresholdsTested - (16 * 1 = 16)
 
-1. Fisher's exact test p-value of motif filter4  (SBBKKGV) top 411 seqs: 1.701e-08 (Corrected p-value: 2.722e-07)
-2. Fisher's exact test p-value of motif filter10  (UUUUBYH) top 411 seqs: 6.453e-08 (Corrected p-value: 1.033e-06)
-3. Fisher's exact test p-value of motif filter9  (DRRDDRA) top 411 seqs: 1.168e-05 (Corrected p-value: 0.0001869)
-4. Fisher's exact test p-value of motif filter14  (KKUUKND) top 411 seqs: 0.0002816 (Corrected p-value: 0.004496)
+1. Fisher's exact test p-value of motif filter13  (WUUWMAV) top 3709 seqs: 2.009e-42 (Corrected p-value: 3.215e-41)
+2. Fisher's exact test p-value of motif filter10  (SVYYUKG) top 3709 seqs: 4.247e-29 (Corrected p-value: 6.795e-28)
+3. Fisher's exact test p-value of motif filter15  (DWWWWNR) top 3709 seqs: 7.108e-08 (Corrected p-value: 1.137e-06)
+4. Fisher's exact test p-value of motif filter4  (MADDKBN) top 3709 seqs: 1.081e-06 (Corrected p-value: 1.729e-05)
+5. Fisher's exact test p-value of motif filter7  (CBNBSGR) top 3709 seqs: 1.614e-05 (Corrected p-value: 0.0002582)
+6. Fisher's exact test p-value of motif filter12  (YHNWNVA) top 3709 seqs: 3.637e-05 (Corrected p-value: 0.0005818)
+7. Fisher's exact test p-value of motif filter3  (NAMHHHU) top 3709 seqs: 6.407e-05 (Corrected p-value: 0.001025)
+8. Fisher's exact test p-value of motif filter11  (YYYHHMA) top 3709 seqs: 7.263e-05 (Corrected p-value: 0.001161)
+9. Fisher's exact test p-value of motif filter9  (RWADRRR) top 3709 seqs: 0.0002593 (Corrected p-value: 0.004141)
+10. Fisher's exact test p-value of motif filter8  (KDRANKU) top 3709 seqs: 0.0007099 (Corrected p-value: 0.0113)
