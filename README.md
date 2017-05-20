@@ -24,7 +24,7 @@ You first need train the model, then the trained models is used to predict for y
 <br>
 For ensembling models, it will save 'model.pkl.local' and 'model.pkl.global' for local and global CNNs, respectively.
 <br>
-#step 2:
+# step 2:
 2. python ideepe.py --testfile=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.ls.positives.fa --model_type=CNN --model_file=model.pkl --predict=True 
 <br>
 The testfile is your input sequences, and the model_file should be consist with the name used for trainig, and the predictions socre for all sequences will be default saved to 'prediction.txt' <br>
