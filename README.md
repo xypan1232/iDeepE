@@ -15,3 +15,15 @@ python ideepe.py [-h] [--posi <postive_sequecne_file>] <br>
                  [--ensemble ENSEMBLE] [--batch_size BATCH_SIZE] <br>
                  [--num_filters NUM_FILTERS] [--n_epochs N_EPOCHS] <br>
 It supports model training, testing and different model structure, MODEL_TYPE can be CNNs, CNN-LSTM and ResNet.
+
+# Use case:
+You want to predict the binding sites fro RBP ALKBH5 using ensebling local and global CNNs. <br>
+You first need train the model, then the trained models is used to predict for your sequences, the follwoing CLI will train a ensembling model using local and global CNNs using training positves and negatives. <br>
+1. python ideepe.py --posi=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.positives.fa --nega=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.negatives.fa --model_type=CNN --model_file=model.pkl --train=True 
+<br>
+For ensembling models, it will save 'model.pkl.local' and 'model.pkl.global' for local and global CNNs, respectively.
+<br>
+2. python ideepe.py --testfile=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.ls.positives.fa --model_type=CNN --model_file=model.pkl --predict=True 
+<br>
+The testfile is your input sequences, and the model_file should be consist with the name used for trainig, and the predictions socre for all sequences will be default saved to 'prediction.txt' <br>
+ 
