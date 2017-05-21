@@ -9,7 +9,7 @@ Sklearn (https://github.com/scikit-learn/scikit-learn)
 Download the trainig and testing data from http://www.bioinf.uni-freiburg.de/Software/GraphProt/GraphProt_CLIP_sequences.tar.bz2 and compress it in current dir. It has 24 experiments of 21 RBPs, and we need train one model per experiment.
 
 # Supported models
-Now it supports GPUs and 3 models, including CNNs, CNN-LSTM and ResNet, they can be trained using local CNNs and global CNNs, and alos ensembling of local and global CNNs.
+Now it supports GPUs and 3 types of models, including CNNs, CNN-LSTM and ResNet. Each model can be trained using local CNNs and global CNNs, and also ensembling of local and global CNNs.
 
 # Usage:
 python ideepe.py [-h] [--posi <postive_sequecne_file>] <br>
@@ -33,3 +33,5 @@ For ensembling models, it will save 'model.pkl.local' and 'model.pkl.global' for
 # step 2:
 2. python ideepe.py --testfile=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.ls.positives.fa --model_type=CNN --model_file=model.pkl --predict=True 
 <br>
+
+testfile is your input fasta sequences file, and the predicted outputs for all sequences will be defaulted saved in "prediction.txt". 
