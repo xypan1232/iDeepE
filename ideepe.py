@@ -16,7 +16,7 @@ import random
 import gzip
 import pickle
 import timeit
-#from seq_motifs import get_motif
+from seq_motifs import get_motif
 import argparse
 #from sklearn.externals import joblib
 
@@ -27,7 +27,7 @@ if torch.cuda.is_available():
 else:
         cuda = False
         print('===> Using CPU')
-        
+#cuda = False        
 def padding_sequence_new(seq, max_len = 101, repkey = 'N'):
     seq_len = len(seq)
     new_seq = seq
@@ -670,7 +670,34 @@ def get_data(posi, nega = None, channel = 5,  window_size = 101, train = True):
     
     return train_bags, label
 
-def train_network(model_type, X_train, y_train, channel = 5, window_size = 107, model_file = 'model.pkl', batch_size = 100, n_epochs = 50, num_filters = 16):
+def detect_motifs(model, test_seqs, X_train, output_dir = 'motifs', channel = 1):
+	if channel == 1:
+        	if not os.path.exists(output_dir):
+            		os.makedirs(output_dir)
+            
+        	for param in model.parameters():
+            		layer1_para =  param.data.cpu().numpy()
+            		break
+        	#test_data = load_graphprot_data(protein, train = True)
+        	#test_seqs = test_data["seq"]
+		N = len(test_seqs)
+		if N > 1500:
+			sele = 15000
+		else:
+			sele = N
+		ix_all = np.arange(N)
+    		np.random.shuffle(ix_all)
+	
+	    	ix_test = ix_all[0:sele]
+		X_train = X_train[ix_test, :, :, :]
+		test_seq = []
+		for ind in ix_test:
+			test_seq.append(test_seqs[ind])
+		test_seqs = test_seq
+		filter_outs = model.layer1out(X_train)[:,:, 0, :]
+		get_motif(layer1_para[:,0, :, :], filter_outs, test_seqs, dir1 = output_dir)
+
+def train_network(model_type, X_train, y_train, channel = 5, window_size = 107, model_file = 'model.pkl', batch_size = 100, n_epochs = 50, num_filters = 16, motif = False, motif_seqs = [], motif_outdir = 'motifs'):
     print 'model training for ', model_type
     #nb_epos= 5
     if model_type == 'CNN':
@@ -689,6 +716,9 @@ def train_network(model_type, X_train, y_train, channel = 5, window_size = 107, 
                 loss=nn.CrossEntropyLoss())
     clf.fit(X_train, y_train, batch_size=batch_size, nb_epoch=n_epochs)
     
+    if motif and channel == 1:
+	detect_motifs(model, motif_seqs, X_train, motif_outdir)
+
     torch.save(model.state_dict(), model_file)
     #print 'predicting'         
     #pred = model.predict_proba(test_bags)
@@ -723,6 +753,8 @@ def run_ideepe(parser):
     train = parser.train
     model_file = parser.model_file
     predict = parser.predict
+    motif = parser.motif
+    motif_outdir = parser.motif_dir
     max_size = parser.maxsize
     channel = parser.channel
     local = parser.local
@@ -734,7 +766,28 @@ def run_ideepe(parser):
     testfile = parser.testfile
     glob = parser.glob
     start_time = timeit.default_timer()
-    #pdb.set_trace()    
+    #pdb.set_trace() 
+    if predict:
+        train = False
+        if testfile == '':
+            print 'you need specify the fasta file for predicting when predict is True'
+            return
+    if train:
+        if posi == '' or nega == '':
+            print 'you need specify the training positive and negative fasta file for training when train is True'
+            return
+    motif_seqs = []
+    if motif:
+            train = True
+	    local = False
+	    glob = True
+	    #pdb.set_trace()
+            data = read_data_file(posi, nega)
+            motif_seqs = data['seq']
+            if posi == '' or nega == '':
+                print 'To identify motifs, you need training positive and negative sequences using global CNNs.'
+                return
+   
     if local:
         #window_size = window_size + 6
     	channel = channel
@@ -749,30 +802,20 @@ def run_ideepe(parser):
     #if local and ensemble:
     #	ensemble = False
 	
-    if predict:
-	train = False
-        if testfile == '':
-            print 'you need specify the fasta file for predicting when predict is True'
-            return
-    if train:
-        if posi == '' or nega == '':
-            print 'you need specify the training positive and negative fasta file for training when train is True'
-            return
-    
     if train:
         if not ensemble:
             train_bags, train_labels = get_data(posi, nega, channel = channel, window_size = window_size)
             model = train_network(model_type, np.array(train_bags), np.array(train_labels), channel = channel, window_size = window_size + 6,
-                                         model_file = model_file, batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters)
+                                         model_file = model_file, batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters, motif = motif, motif_seqs = motif_seqs, motif_outdir = motif_outdir) 
         else:
             print 'ensembling'
             train_bags, train_labels = get_data(posi, nega, channel = 1, window_size = max_size)
             model = train_network(model_type, np.array(train_bags), np.array(train_labels), channel = 1, window_size = max_size + 6,
-                                         model_file = model_file + '.global', batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters)
+                                  model_file = model_file + '.global', batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters, motif = motif, motif_seqs = motif_seqs, motif_outdir = motif_outdir)
             train_bags, train_labels = [], []
             train_bags, train_labels = get_data(posi, nega, channel = 5, window_size = window_size)
             model = train_network(model_type, np.array(train_bags), np.array(train_labels), channel = 5, window_size = window_size + 6,
-                                        model_file = model_file + '.local', batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters)
+                                        model_file = model_file + '.local', batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters, motif = motif, motif_seqs = motif_seqs, motif_outdir = motif_outdir)
 
             
             end_time = timeit.default_timer()
@@ -804,7 +847,9 @@ def parse_arguments(parser):
     parser.add_argument('--nega', type=str, metavar='<negative_sequecne_file>', help='The fasta file of negative training samples')
     parser.add_argument('--model_type', type=str, default='CNN', help='it supports the following 3 deep network model: CNN, CNN-LSTM, ResNet, default model is CNN')
     parser.add_argument('--out_file', type=str, default='prediction.txt', help='The output file used to store the prediction probability of the testing sequences')
-    parser.add_argument('--train', type=bool, default=True, help='use this flag to train the model on your data')
+    parser.add_argument('--motif', type=bool, default=False, help='It is used to identify binding motifs from sequences.')
+    parser.add_argument('--motif_dir', type=str, default='motifs', help='The dir used to store the prediction binding motifs.')
+    parser.add_argument('--train', type=bool, default=True, help='The path to the Pickled file containing durations between visits of patients. If you are not using duration information, do not use this option')
     parser.add_argument('--model_file', type=str, default='model.pkl', help='The file to save model parameters. Use this option if you want to train on your sequences or predict for your sequences')
     parser.add_argument('--predict', type=bool, default=False,  help='Predicting the RNA-protein binding sites for your input sequences, if using train, then it will be False')
     parser.add_argument('--testfile', type=str, default='',  help='the test fast file for sequences you want to predict for, you need specify it when using predict')
