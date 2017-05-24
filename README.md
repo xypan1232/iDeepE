@@ -15,7 +15,7 @@ Now it supports GPUs and 3 types of models, including CNNs, CNN-LSTM and ResNet.
 python ideepe.py [-h] [--posi <postive_sequecne_file>] <br>
                  [--nega <negative_sequecne_file>] [--model_type MODEL_TYPE] <br>
                  [--out_file OUT_FILE] [--motif MOTIF] [--train TRAIN] <br>
-                 [--model_file MODEL_FILE] [--predict PREDICT] <br>
+                 [--model_file MODEL_FILE] [--predict PREDICT] [--motif_dir MOTIF_DIR]<br>
                  [--testfile TESTFILE] [--maxsize MAXSIZE] [--channel CHANNEL] <br>
                  [--window_size WINDOW_SIZE] [--local LOCAL] [--glob GLOB] <br>
                  [--ensemble ENSEMBLE] [--batch_size BATCH_SIZE] <br>
@@ -39,6 +39,6 @@ testfile is your input fasta sequences file, and the predicted outputs for all s
 # Identify motifs:
 You need install TOMTOM in MEME Suite(http://meme-suite.org/doc/download.html?man_type=web) to search identifyed motifs against known motifs of RBPs. And also you need has positive and negative sequences when using motif flag. <br> 
 <br>
-python ideepe.py --posi=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.positives.fa --nega=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.negatives.fa --model_type=CNN --model_file=model.pkl --motif=True
+python ideepe.py --posi=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.positives.fa --nega=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.negatives.fa --model_type=CNN --model_file=model.pkl --motif=True --motif_dir=motifs
 
-
+The identified motifs (PWMs, and Weblogo) are saved to be defaulted dir motifs (you can also use --motif_dir to configure your dir for motifs), and also include the report from TOMTOM.
