@@ -2,6 +2,7 @@
 <br>
 Computational algorithms for identifying RNAs that bind to specific RBPs are urgently needed, and they can complement high-cost experimental  methods. Previous methods all focus on using entire sequences for model training, and local sequence information is completely ignored. On the other hand, local sequences provide genomic context recognized by RBPs. In this study, we develop a convolutional neural network (CNN) based method called iDeepE  to predict RBP binding sites and motifs using local and global sequences. 
  <br> <br>
+ 
 # Dependency:
 PyTorch 0.1.11 (http://pytorch.org/ ) <br>
 Sklearn (https://github.com/scikit-learn/scikit-learn)
