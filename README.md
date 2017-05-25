@@ -37,7 +37,7 @@ For ensembling models, it will save 'model.pkl.local' and 'model.pkl.global' for
 testfile is your input fasta sequences file, and the predicted outputs for all sequences will be defaulted saved in "prediction.txt". 
 
 # Identify motifs:
-You need install TOMTOM in MEME Suite(http://meme-suite.org/doc/download.html?man_type=web) to search identifyed motifs against known motifs of RBPs. And also you need has positive and negative sequences when using motif flag. <br> 
+You need install WebLogo (http://weblogo.berkeley.edu/) and TOMTOM in MEME Suite(http://meme-suite.org/doc/download.html?man_type=web) to search identifyed motifs against known motifs of RBPs. And also you need has positive and negative sequences when using motif option. <br> 
 <br>
 # step 3:
 3. python ideepe.py --posi=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.positives.fa --nega=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.negatives.fa --model_type=CNN --model_file=model.pkl --motif=True --motif_dir=motifs
