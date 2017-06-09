@@ -228,7 +228,9 @@ def get_bag_data(data, channel = 5, window_size = 101):
         if len(bag_subt) <channel:
             rand_more = channel - len(bag_subt)
             for ind in range(rand_more):
-                bag_subt.append(random.choice(bag_subt))
+                #bag_subt.append(random.choice(bag_subt))
+		tri_fea = get_RNA_seq_concolutional_array('N'*window_size)
+                bag_subt.append(tri_fea.T)
         
         bags.append(np.array(bag_subt))
     
