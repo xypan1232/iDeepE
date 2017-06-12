@@ -570,6 +570,21 @@ class ResNet(nn.Module):
         temp = y.data.cpu().numpy()
         return temp[:, 1]
 
+def get_all_data(protein, channel = 5):
+
+    data = load_graphprot_data(protein)
+    test_data = load_graphprot_data(protein, train = False)
+    #pdb.set_trace()
+    if channel == 1:
+        train_bags, label = get_bag_data_1_channel(data)
+        test_bags, true_y = get_bag_data_1_channel(test_data)
+    else:
+        train_bags, label = get_bag_data(data)
+    #pdb.set_trace()
+        test_bags, true_y = get_bag_data(test_data)
+
+    return train_bags, label, test_bags, true_y
+
 def run_network(model_type, X_train, test_bags, y_train, channel = 5, window_size = 107):
     print 'model training for ', model_type
     #nb_epos= 5
