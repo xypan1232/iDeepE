@@ -346,6 +346,7 @@ class Estimator(object):
         return y_pred        
 
     def predict_proba( X):
+	self.model.eval()
         return self.model.predict_proba(X)
         
 class CNN(nn.Module):
@@ -387,7 +388,7 @@ class CNN(nn.Module):
     def layer1out(self, x):
         if type(x) is np.ndarray:
             x = torch.from_numpy(x.astype(np.float32))
-        x = Variable(x)
+        x = Variable(x, volatile=True)
         if cuda:
             x = x.cuda()
         out = self.layer1(x)
@@ -397,7 +398,7 @@ class CNN(nn.Module):
     def predict_proba(self, x):
         if type(x) is np.ndarray:
             x = torch.from_numpy(x.astype(np.float32))
-        x = Variable(x)
+        x = Variable(x, volatile=True)
         if cuda:
             x = x.cuda()
         y = self.forward(x)
@@ -451,7 +452,7 @@ class CNN_LSTM(nn.Module):
     def layer1out(self, x):
         if type(x) is np.ndarray:
             x = torch.from_numpy(x.astype(np.float32))
-        x = Variable(x)
+        x = Variable(x, volatile=True)
         if cuda:
             x = x.cuda()
         out = self.layer1(x)
@@ -461,7 +462,7 @@ class CNN_LSTM(nn.Module):
     def predict_proba(self, x):
         if type(x) is np.ndarray:
             x = torch.from_numpy(x.astype(np.float32))
-        x = Variable(x)
+        x = Variable(x, volatile=True)
         if cuda:
             x = x.cuda()
         y = self.forward(x)
@@ -553,7 +554,7 @@ class ResNet(nn.Module):
     def layer1out(self, x):
         if type(x) is np.ndarray:
             x = torch.from_numpy(x.astype(np.float32))
-        x = Variable(x)
+        x = Variable(x, volatile=True)
         if cuda:
             x = x.cuda()
         out = self.conv(x)
@@ -563,7 +564,7 @@ class ResNet(nn.Module):
     def predict_proba(self, x):
         if type(x) is np.ndarray:
             x = torch.from_numpy(x.astype(np.float32))
-        x = Variable(x)
+        x = Variable(x, volatile=True)
         if cuda:
             x = x.cuda()
         y = self.forward(x)
