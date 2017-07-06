@@ -4,6 +4,7 @@ Computational algorithms for identifying RNAs that bind to specific RBPs are urg
  <br> <br>
  
 # Dependency:
+python 2.7 <br>
 PyTorch 0.1.11 (http://pytorch.org/ ) <br>
 Sklearn (https://github.com/scikit-learn/scikit-learn)
 
@@ -47,3 +48,6 @@ You need install WebLogo (http://weblogo.berkeley.edu/) and TOMTOM in MEME Suite
 3. python ideepe.py --posi=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.positives.fa --nega=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.negatives.fa --model_type=CNN --model_file=model.pkl --motif=True --motif_dir=motifs
 
 The identified motifs (PWMs, and Weblogo) are saved to be defaulted dir motifs (you can also use --motif_dir to configure your dir for motifs), and also include the report from TOMTOM.
+
+# Contact
+Xiaoyong Pan: xypan172436atgmail.com
