@@ -10,6 +10,7 @@ Sklearn (https://github.com/scikit-learn/scikit-learn)
 
 # Data 
 Download the trainig and testing data from http://www.bioinf.uni-freiburg.de/Software/GraphProt/GraphProt_CLIP_sequences.tar.bz2 and compress it in current dir. It has 24 experiments of 21 RBPs, and we need train one model per experiment.
+Anohter dataset is from https://github.com/gianlucacorrado/RNAcommender/tree/master/examples, 47 RBPs are used in this study.
 
 # Supported models
 Now it supports GPUs and 3 types of models, including CNNs, CNN-LSTM and ResNet. Each model can be trained using local CNNs and global CNNs, and also ensembling of local and global CNNs. The code support GPUs and CPUs, it automatically check whether you server install GPU or not, it will proritize using the GPUs if there exist GPUs.
