@@ -14,7 +14,7 @@ Download the trainig and testing data from http://www.bioinf.uni-freiburg.de/Sof
 Anohter dataset is from https://github.com/gianlucacorrado/RNAcommender/tree/master/examples, 47 RBPs are used in this study.
 
 # Supported models
-Now it supports GPUs and 3 types of models, including CNNs, CNN-LSTM and ResNet. Each model can be trained using local CNNs and global CNNs, and also ensembling of local and global CNNs. The code support GPUs and CPUs, it automatically check whether you server install GPU or not, it will proritize using the GPUs if there exist GPUs.
+Now it supports GPUs and 3 types of models, including CNN, CNN-LSTM and ResNet. Each model can be trained using local CNNs and global CNNs, and also ensembling of local and global CNNs. The code support GPUs and CPUs, it automatically check whether you server install GPU or not, it will proritize using the GPUs if there exist GPUs.
 
 # Usage:
 python ideepe.py [-h] [--posi <postive_sequecne_file>] <br>
@@ -25,11 +25,11 @@ python ideepe.py [-h] [--posi <postive_sequecne_file>] <br>
                  [--window_size WINDOW_SIZE] [--local LOCAL] [--glob GLOB] <br>
                  [--ensemble ENSEMBLE] [--batch_size BATCH_SIZE] <br>
                  [--num_filters NUM_FILTERS] [--n_epochs N_EPOCHS] <br>
-It supports model training, testing and different model structure, MODEL_TYPE can be CNNs, CNN-LSTM and ResNet.
+It supports model training, testing and different model structure, MODEL_TYPE can be CNN, CNN-LSTM and ResNet.
 
 # Use case:
 You want to predict the binding sites fro RBP ALKBH5 using ensebling local and global CNNs, and the default model is ensembling model. <br>
-You first need train the model, then the trained models is used to predict for your sequences, the follwoing CLI will train a ensembling model using local and global CNNs using training positves and negatives. <br>
+You first need train the model, then the trained models is used to predict for your sequences, the follwoing CLI will train a ensembling model using local and global CNNs, which are trained using positves and negatives derived from CLIP-seq. <br>
 # step 1:
 1. python ideepe.py --posi=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.positives.fa --nega=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.negatives.fa --model_type=CNN --model_file=model.pkl --train=True 
 <br>
