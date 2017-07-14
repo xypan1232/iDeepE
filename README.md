@@ -14,7 +14,7 @@ Download the trainig and testing data from http://www.bioinf.uni-freiburg.de/Sof
 Anohter dataset is from https://github.com/gianlucacorrado/RNAcommender/tree/master/examples, 47 RBPs are used in this study.
 
 # Supported models
-Now it supports GPUs and 3 types of models, including CNN, CNN-LSTM and ResNet. Each model can be trained using local CNNs and global CNNs, and also ensembling of local and global CNNs. The code support GPUs and CPUs, it automatically check whether you server install GPU or not, it will proritize using the GPUs if there exist GPUs.
+Now it supports GPUs and 3 types of models, including CNN, CNN-LSTM and ResNet. Each model can be trained using local CNNs and global CNNs, and also ensembling of local and global CNNs. The code support GPUs and CPUs, it automatically check whether you server install GPU or not, it will proritize using the GPUs if there exist GPUs. In addition, iDeepE can also be adapted to protein binding sites on DNAs and identify DNA speciticity of proteins. 
 
 # Usage:
 python ideepe.py [-h] [--posi <postive_sequecne_file>] <br>
@@ -28,7 +28,7 @@ python ideepe.py [-h] [--posi <postive_sequecne_file>] <br>
 It supports model training, testing and different model structure, MODEL_TYPE can be CNN, CNN-LSTM and ResNet.
 
 # Use case:
-You want to predict the binding sites for RBP ALKBH5 using ensebling local and global CNNs, and the default model is ensembling model. <br>
+Take ALKBH5 as an example, if you want to predict the binding sites for RBP ALKBH5 using ensebling local and global CNNs, and the default model is ensembling model. <br>
 You first need train the model per RBP, then the trained model is used to predict binding probability of this RBP for your sequences, the follwoing CLI will train a ensembling model using local and global CNNs, which are trained using positves and negatives derived from CLIP-seq. <br>
 # step 1:
 1. python ideepe.py --posi=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.positives.fa --nega=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.train.negatives.fa --model_type=CNN --model_file=model.pkl --train=True 
