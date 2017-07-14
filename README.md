@@ -14,7 +14,7 @@ Download the trainig and testing data from http://www.bioinf.uni-freiburg.de/Sof
 Anohter dataset is from https://github.com/gianlucacorrado/RNAcommender/tree/master/examples, 47 RBPs are used in this study.
 
 # Supported models
-Now it supports GPUs and 3 types of models, including CNN, CNN-LSTM and ResNet. Each model can be trained using local CNNs and global CNNs, and also ensembling of local and global CNNs. The code support GPUs and CPUs, it automatically check whether you server install GPU or not, it will proritize using the GPUs if there exist GPUs. In addition, iDeepE can also be adapted to protein binding sites on DNAs and identify DNA speciticity of proteins. 
+Now it supports GPUs and 3 types of models, including CNN, CNN-LSTM and ResNet. Each model can be trained using local CNNs and global CNNs, and also ensembling of local and global CNNs. The code support GPUs and CPUs, it automatically check whether you server install GPU or not, it will proritize using the GPUs if there exist GPUs. In addition, iDeepE can also be adapted to protein binding sites on DNAs and identify DNA binding speciticity of proteins. 
 
 # Usage:
 python ideepe.py [-h] [--posi <postive_sequecne_file>] <br>
