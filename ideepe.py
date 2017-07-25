@@ -699,7 +699,7 @@ def detect_motifs(model, test_seqs, X_train, output_dir = 'motifs', channel = 1)
         	#test_data = load_graphprot_data(protein, train = True)
         	#test_seqs = test_data["seq"]
 		N = len(test_seqs)
-		if N > 1500:
+		if N > 15000:
 			sele = 15000
 		else:
 			sele = N
