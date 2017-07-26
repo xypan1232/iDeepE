@@ -594,7 +594,7 @@ def run_network(model_type, X_train, test_bags, y_train, channel = 5, window_siz
     elif model_type == 'CNNLSTM':
         model = CNN_LSTM(nb_filter = 16, labcounts = 4, window_size = window_size, channel = channel)
     elif model_type == 'ResNet':
-        model = ResNet(ResidualBlock, [3, 3, 3], nb_filter = 16, labcounts = 4, window_size = 107)
+        model = ResNet(ResidualBlock, [3, 3, 3], nb_filter = 16, labcounts = 4, window_size = window_size)
     else:
         print 'only support CNN, CNN-LSTM and ResNet model'
     #model = RNN(INPUT_SIZE, HIDDEN_SIZE, 2, class_size)
