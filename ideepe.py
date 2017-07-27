@@ -8,6 +8,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 from torch.utils.data import DataLoader, TensorDataset
+from collections import OrderedDict
 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
@@ -355,8 +356,8 @@ class CNN(nn.Module):
         self.layer1 = nn.Sequential(
             nn.Conv2d(channel, nb_filter, kernel_size, stride = stride, padding = padding),
             nn.BatchNorm2d(nb_filter),
-            nn.ReLU(),
-            nn.MaxPool2d(pool_size, stride = stride))
+            nn.ReLU())
+        self.pool1 = nn.MaxPool2d(pool_size, stride = stride)
         out1_size = (window_size + 2*padding - (kernel_size[1] - 1) - 1)/stride[1] + 1
         maxpool_size = (out1_size + 2*padding - (pool_size[1] - 1) - 1)/stride[1] + 1
         self.layer2 = nn.Sequential(
@@ -375,6 +376,7 @@ class CNN(nn.Module):
         
     def forward(self, x):
         out = self.layer1(x)
+        out = self.pool1(out)
         out = self.layer2(out)
         out = out.view(out.size(0), -1)
         out = self.drop1(out)
@@ -411,8 +413,8 @@ class CNN_LSTM(nn.Module):
         self.layer1 = nn.Sequential(
             nn.Conv2d(channel, nb_filter, kernel_size, stride = stride, padding = padding),
             nn.BatchNorm2d(nb_filter),
-            nn.ReLU(),
-            nn.MaxPool2d(pool_size, stride = stride))
+            nn.ReLU())
+        self.pool1 = nn.MaxPool2d(pool_size, stride = stride)
         self.num_layers = num_layers
         self.hidden_size = hidden_size
         out1_size = (window_size + 2*padding - (kernel_size[1] - 1) - 1)/stride[1] + 1
@@ -428,6 +430,7 @@ class CNN_LSTM(nn.Module):
         
     def forward(self, x):
         out = self.layer1(x)
+        out = self.pool1(out)
         out = self.downsample(out)
         out = torch.squeeze(out, 1)
         #pdb.set_trace()
@@ -571,6 +574,105 @@ class ResNet(nn.Module):
         temp = y.data.cpu().numpy()
         return temp[:, 1]
 
+class _DenseLayer(nn.Sequential):
+    def __init__(self, num_input_features, growth_rate, bn_size, drop_rate):
+        super(_DenseLayer, self).__init__()
+        self.add_module('norm.1', nn.BatchNorm2d(num_input_features)),
+        self.add_module('relu.1', nn.ReLU(inplace=True)),
+        self.add_module('conv.1', nn.Conv2d(num_input_features, bn_size *
+            growth_rate, kernel_size=1, stride=1, bias=False)),
+            self.add_module('norm.2', nn.BatchNorm2d(bn_size * growth_rate)),
+            self.add_module('relu.2', nn.ReLU(inplace=True)),
+            self.add_module('conv.2', nn.Conv2d(bn_size * growth_rate, growth_rate,
+            kernel_size=(1, 3), stride=1, padding=(0, 1), bias=False)),
+        self.drop_rate = drop_rate
+
+    def forward(self, x):
+        new_features = super(_DenseLayer, self).forward(x)
+        if self.drop_rate > 0:
+            new_features = F.dropout(new_features, p=self.drop_rate, training=self.training)
+        return torch.cat([x, new_features], 1)
+
+
+class _Transition(nn.Sequential):
+    def __init__(self, num_input_features, num_output_features):
+        super(_Transition, self).__init__()
+        self.add_module('norm', nn.BatchNorm2d(num_input_features))
+        self.add_module('relu', nn.ReLU(inplace=True))
+        self.add_module('conv', nn.Conv2d(num_input_features, num_output_features,
+                                          kernel_size=1, stride=1, bias=False))
+        self.add_module('pool', nn.AvgPool2d(kernel_size=(1, 2), stride=(1, 2)))
+
+
+class _DenseBlock(nn.Sequential):
+    def __init__(self, num_layers, num_input_features, bn_size, growth_rate, drop_rate):
+        super(_DenseBlock, self).__init__()
+        for i in range(num_layers):
+            layer = _DenseLayer(num_input_features + i * growth_rate, growth_rate, bn_size, drop_rate)
+            self.add_module('denselayer%d' % (i + 1), layer)
+
+
+class DenseNet(nn.Module):
+    def __init__(self, labcounts = 4, window_size = 107, channel = 5, growth_rate=6, block_config=(16, 16, 16), compression=0.5,
+                 num_init_features=12, bn_size=2, drop_rate=0, avgpool_size=(1, 8),
+                 num_classes=2):
+
+        super(DenseNet, self).__init__()
+        assert 0 < compression <= 1, 'compression of densenet should be between 0 and 1'
+        self.avgpool_size = avgpool_size
+
+        # First convolution
+        self.features = nn.Sequential(OrderedDict([
+            ('conv0', nn.Conv2d(channel, num_init_features, kernel_size=(4, 10), stride=1, bias=False)),
+        ]))
+        
+        last_size = window_size - 7
+        # Each denseblock
+        num_features = num_init_features
+        #last_size =  window_size
+        for i, num_layers in enumerate(block_config):
+            block = _DenseBlock(num_layers=num_layers,
+                                num_input_features=num_features,
+                                bn_size=bn_size, growth_rate=growth_rate,
+                                drop_rate=drop_rate)
+            self.features.add_module('denseblock%d' % (i + 1), block)
+            num_features = num_features + num_layers * growth_rate
+            if i != len(block_config) - 1:
+                trans = _Transition(num_input_features=num_features,
+                                    num_output_features=int(num_features
+                                                            * compression))
+                last_size = (last_size - (2 - 1) - 1)/2 + 1
+                self.features.add_module('transition%d' % (i + 1), trans)
+                num_features = int(num_features * compression)
+
+        # Final batch norm
+        self.features.add_module('norm_final', nn.BatchNorm2d(num_features))
+        avgpool2_1_size = (last_size - (self.avgpool_size[1] - 1) - 1)/self.avgpool_size[1] + 1
+        num_features = num_features*avgpool2_1_size
+        print num_features
+        # Linear layer
+        self.classifier = nn.Linear(num_features, num_classes)
+
+    def forward(self, x):
+        #x = x.view(x.size(0), 1, x.size(1), x.size(2))
+        features = self.features(x)
+        out = F.relu(features, inplace=True)
+        out = F.avg_pool2d(out, kernel_size=self.avgpool_size).view(
+                           features.size(0), -1)
+        out = self.classifier(out)
+        out = F.sigmoid(out)
+        return out
+
+    def predict_proba(self, x):
+        if type(x) is np.ndarray:
+            x = torch.from_numpy(x.astype(np.float32))
+        x = Variable(x, volatile=True)
+        if cuda:
+            x = x.cuda()
+        y = self.forward(x)
+        temp = y.data.cpu().numpy()
+        return temp[:, 1]
+
 def get_all_data(protein, channel = 5):
 
     data = load_graphprot_data(protein)
@@ -595,10 +697,11 @@ def run_network(model_type, X_train, test_bags, y_train, channel = 5, window_siz
         model = CNN_LSTM(nb_filter = 16, labcounts = 4, window_size = window_size, channel = channel)
     elif model_type == 'ResNet':
         model = ResNet(ResidualBlock, [3, 3, 3], nb_filter = 16, labcounts = 4, window_size = window_size, channel = channel)
+    elif model_type == 'DenseNet':
+        model = DenseNet(window_size = window_size, channel = channel, labcounts = 4)
     else:
-        print 'only support CNN, CNN-LSTM and ResNet model'
-    #model = RNN(INPUT_SIZE, HIDDEN_SIZE, 2, class_size)
-    #pdb.set_trace()
+        print 'only support CNN, CNN-LSTM, ResNet and DenseNet model'
+
     if cuda:
         model = model.cuda()
     clf = Estimator(model)
@@ -612,9 +715,6 @@ def run_network(model_type, X_train, test_bags, y_train, channel = 5, window_siz
 
 def run_ideepe_on_graphprot(model_type = 'CNN', local = False, ensemble = False):
     data_dir = './GraphProt_CLIP_sequences/'
-    #trids =  get_6_trids()
-    #ordict = read_rna_dict()
-    #embedded_rna_dim, embedding_rna_weights, n_nucl_symbols = get_embed_dim_new('rnaEmbedding25.pickle')
     
     finished_protein = set()
     start_time = timeit.default_timer()
@@ -724,8 +824,10 @@ def train_network(model_type, X_train, y_train, channel = 5, window_size = 107, 
         model = CNN_LSTM(nb_filter = num_filters, labcounts = 4, window_size = window_size, channel = channel)
     elif model_type == 'ResNet':
         model = ResNet(ResidualBlock, [3, 3, 3], nb_filter = num_filters, labcounts = 4, channel = channel , window_size = window_size)
+    elif model_type == 'DenseNet':
+        model = DenseNet(window_size = window_size, channel = channel, labcounts = 4)
     else:
-        print 'only support CNN, CNN-LSTM and ResNet model'
+        print 'only support CNN, CNN-LSTM, ResNet and DenseNet model'
 
     if cuda:
         model = model.cuda()
@@ -751,8 +853,10 @@ def predict_network(model_type, X_test, channel = 5, window_size = 107, model_fi
         model = CNN_LSTM(nb_filter = num_filters, labcounts = 4, window_size = window_size, channel = channel)
     elif model_type == 'ResNet':
         model = ResNet(ResidualBlock, [3, 3, 3], nb_filter = num_filters, labcounts = 4, channel = channel , window_size = window_size)
+    elif model_type == 'DenseNet':
+        model = DenseNet(window_size = window_size, channel = channel, labcounts = 4)
     else:
-        print 'only support CNN, CNN-LSTM and ResNet model'
+        print 'only support CNN, CNN-LSTM, ResNet and DenseNet model'
 
     if cuda:
         model = model.cuda()
@@ -863,7 +967,7 @@ def run_ideepe(parser):
 def parse_arguments(parser):
     parser.add_argument('--posi', type=str, metavar='<postive_sequecne_file>', help='The fasta file of positive training samples')
     parser.add_argument('--nega', type=str, metavar='<negative_sequecne_file>', help='The fasta file of negative training samples')
-    parser.add_argument('--model_type', type=str, default='CNN', help='it supports the following 3 deep network model: CNN, CNN-LSTM, ResNet, default model is CNN')
+    parser.add_argument('--model_type', type=str, default='CNN', help='it supports the following deep network models: CNN, CNN-LSTM, ResNet and DenseNet, default model is CNN')
     parser.add_argument('--out_file', type=str, default='prediction.txt', help='The output file used to store the prediction probability of the testing sequences')
     parser.add_argument('--motif', type=bool, default=False, help='It is used to identify binding motifs from sequences.')
     parser.add_argument('--motif_dir', type=str, default='motifs', help='The dir used to store the prediction binding motifs.')
