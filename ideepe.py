@@ -836,7 +836,7 @@ def train_network(model_type, X_train, y_train, channel = 5, window_size = 107, 
     clf.fit(X_train, y_train, batch_size=batch_size, nb_epoch=n_epochs)
     
     if motif and channel == 1:
-	detect_motifs(model, motif_seqs, X_train, motif_outdir)
+        detect_motifs(model, motif_seqs, X_train, motif_outdir)
 
     torch.save(model.state_dict(), model_file)
     #print 'predicting'         
