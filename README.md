@@ -14,7 +14,7 @@ Download the trainig and testing data from http://www.bioinf.uni-freiburg.de/Sof
 Anohter dataset is from https://github.com/gianlucacorrado/RNAcommender/tree/master/examples, 47 RBPs are used in this study.
 
 # Supported models
-Now it supports GPUs and 3 types of models, including CNN, CNN-LSTM and ResNet. Each model can be trained using local CNNs and global CNNs, and also ensembling of local and global CNNs. The code support GPUs and CPUs, it automatically check whether you server install GPU or not, it will proritize using the GPUs if there exist GPUs. In addition, iDeepE can also be adapted to protein binding sites on DNAs and identify DNA binding speciticity of proteins. 
+Now it supports GPUs and 4 types of models, including CNN, CNN-LSTM, DenseNet and ResNet. Each model can be trained using local CNNs and global CNNs, and also ensembling of local and global CNNs. The code support GPUs and CPUs, it automatically check whether you server install GPU or not, it will proritize using the GPUs if there exist GPUs. In addition, iDeepE can also be adapted to protein binding sites on DNAs and identify DNA binding speciticity of proteins. 
 
 # Usage:
 python ideepe.py [-h] [--posi <postive_sequecne_file>] <br>
@@ -25,7 +25,7 @@ python ideepe.py [-h] [--posi <postive_sequecne_file>] <br>
                  [--window_size WINDOW_SIZE] [--local LOCAL] [--glob GLOB] <br>
                  [--ensemble ENSEMBLE] [--batch_size BATCH_SIZE] <br>
                  [--num_filters NUM_FILTERS] [--n_epochs N_EPOCHS] <br>
-It supports model training, testing and different model structure, MODEL_TYPE can be CNN, CNN-LSTM and ResNet.
+It supports model training, testing and different model structure, MODEL_TYPE can be CNN, CNN-LSTM and ResNet, DenseNet.
 
 # Use case:
 Take ALKBH5 as an example, if you want to predict the binding sites for RBP ALKBH5 using ensembling local and global CNNs, and the default model is ensembling model. <br>
@@ -39,7 +39,7 @@ For ensembling models, it will save 'model.pkl.local' and 'model.pkl.global' for
 2. python ideepe.py --testfile=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.ls.positives.fa --model_type=CNN --model_file=model.pkl --predict=True 
 <br>
 
-testfile is your input fasta sequences file, and the predicted outputs for all sequences will be defaulted saved in "prediction.txt". Each value seperated by TAB corresponds to the preobability of being RBP binding site for the sequence in fasta file
+testfile is your input fasta sequences file, and the predicted outputs for all sequences will be defaulted saved in "prediction.txt". The value in each line corresponds to the preobability of being RBP binding site for the sequence in fasta file
 
 # Identify motifs:
 You need install WebLogo (http://weblogo.berkeley.edu/) and TOMTOM in MEME Suite(http://meme-suite.org/doc/download.html?man_type=web) to search identifyed motifs against known motifs of RBPs. And also you need has positive and negative sequences when using motif option. <br> 

@@ -957,8 +957,8 @@ def run_ideepe(parser):
 	#pdb.set_trace()
         #auc = roc_auc_score(X_labels, predict)
         #print auc        
-        myprob = "\t".join(map(str, predict))  
-        fw.write(myprob + '\n')
+        myprob = "\n".join(map(str, predict))  
+        fw.write(myprob)
         fw.close()
     else:
         print 'please specify that you want to train the mdoel or predict for your own sequences'
