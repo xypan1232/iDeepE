@@ -790,12 +790,12 @@ def get_data(posi, nega = None, channel = 5,  window_size = 101, train = True):
 
 def detect_motifs(model, test_seqs, X_train, output_dir = 'motifs', channel = 1):
 	if channel == 1:
-        	if not os.path.exists(output_dir):
-            		os.makedirs(output_dir)
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
             
-        	for param in model.parameters():
-            		layer1_para =  param.data.cpu().numpy()
-            		break
+        for param in model.parameters():
+            layer1_para =  param.data.cpu().numpy()
+            break
         	#test_data = load_graphprot_data(protein, train = True)
         	#test_seqs = test_data["seq"]
 		N = len(test_seqs)
