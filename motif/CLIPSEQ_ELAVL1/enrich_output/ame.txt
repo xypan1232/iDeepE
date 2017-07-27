@@ -3,21 +3,19 @@ AME (Analysis of Motif Enrichment): Compiled on May 16 2017 at 17:24:55
 Copyright (c) Robert McLeay <r.mcleay@imb.uq.edu.au> & Timothy Bailey <t.bailey@imb.uq.edu.au>, 2009.
 
 Command line
-ame --control shuff_seq -o motif/CLIPSEQ_ELAVL1/enrich_output seq_enrich motif/CLIPSEQ_ELAVL1/filters_meme.txt
+ame --control shuff_seq -o motifs/CLIPSEQ_ELAVL1/enrich_output seq_enrich motifs/CLIPSEQ_ELAVL1/filters_meme.txt
 
 Not in partition maximization mode. Fixing partition at the number of primary sequences (17031).
 
 Threshold p-value for reporting results: 0.05
 Motif p-values are corrected by #Motifs * #ThresholdsTested - (16 * 1 = 16)
 
-1. Fisher's exact test p-value of motif filter2  (UUUUUYY) top 17031 seqs: 0 (Corrected p-value: 0)
-2. Fisher's exact test p-value of motif filter5  (UUUUUWW) top 17031 seqs: 0 (Corrected p-value: 0)
-3. Fisher's exact test p-value of motif filter7  (UUUUUUU) top 17031 seqs: 0 (Corrected p-value: 0)
-4. Fisher's exact test p-value of motif filter9  (UUWUDKU) top 17031 seqs: 0 (Corrected p-value: 0)
-5. Fisher's exact test p-value of motif filter10  (KUUUKBU) top 17031 seqs: 0 (Corrected p-value: 0)
-6. Fisher's exact test p-value of motif filter8  (VBNNSSC) top 17031 seqs: 1.187e-113 (Corrected p-value: 1.899e-112)
-7. Fisher's exact test p-value of motif filter14  (DDDRAAA) top 17031 seqs: 4.882e-99 (Corrected p-value: 7.812e-98)
-8. Fisher's exact test p-value of motif filter0  (DUDWDDR) top 17031 seqs: 4.359e-45 (Corrected p-value: 6.975e-44)
-9. Fisher's exact test p-value of motif filter13  (WDDGDKN) top 17031 seqs: 2.772e-17 (Corrected p-value: 4.435e-16)
-10. Fisher's exact test p-value of motif filter11  (KKKNSVN) top 17031 seqs: 2.02e-15 (Corrected p-value: 3.232e-14)
-11. Fisher's exact test p-value of motif filter12  (UHDRRGK) top 17031 seqs: 8.276e-05 (Corrected p-value: 0.001323)
+1. Fisher's exact test p-value of motif filter2  (HUUUUYW) top 17031 seqs: 0 (Corrected p-value: 0)
+2. Fisher's exact test p-value of motif filter14  (KKUUUUU) top 17031 seqs: 0 (Corrected p-value: 0)
+3. Fisher's exact test p-value of motif filter0  (HAKAWWH) top 17031 seqs: 2.86e-205 (Corrected p-value: 4.576e-204)
+4. Fisher's exact test p-value of motif filter7  (WWUUCYY) top 17031 seqs: 7.85e-134 (Corrected p-value: 1.256e-132)
+5. Fisher's exact test p-value of motif filter4  (UYKAGRY) top 17031 seqs: 7.297e-81 (Corrected p-value: 1.168e-79)
+6. Fisher's exact test p-value of motif filter3  (HUNMUCC) top 17031 seqs: 1.637e-31 (Corrected p-value: 2.619e-30)
+7. Fisher's exact test p-value of motif filter12  (UVADDMW) top 17031 seqs: 1.047e-21 (Corrected p-value: 1.675e-20)
+8. Fisher's exact test p-value of motif filter9  (ACAYADV) top 17031 seqs: 8.673e-08 (Corrected p-value: 1.388e-06)
+9. Fisher's exact test p-value of motif filter13  (NNWGHND) top 17031 seqs: 5.598e-05 (Corrected p-value: 0.0008953)

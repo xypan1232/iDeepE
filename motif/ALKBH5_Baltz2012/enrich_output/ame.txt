@@ -3,16 +3,17 @@ AME (Analysis of Motif Enrichment): Compiled on May 16 2017 at 17:24:55
 Copyright (c) Robert McLeay <r.mcleay@imb.uq.edu.au> & Timothy Bailey <t.bailey@imb.uq.edu.au>, 2009.
 
 Command line
-ame --control shuff_seq -o motif/ALKBH5_Baltz2012/enrich_output seq_enrich motif/ALKBH5_Baltz2012/filters_meme.txt
+ame --control shuff_seq -o motifs/ALKBH5_Baltz2012/enrich_output seq_enrich motifs/ALKBH5_Baltz2012/filters_meme.txt
 
 Not in partition maximization mode. Fixing partition at the number of primary sequences (2410).
 
 Threshold p-value for reporting results: 0.05
 Motif p-values are corrected by #Motifs * #ThresholdsTested - (16 * 1 = 16)
 
-1. Fisher's exact test p-value of motif filter10  (KKKYYYY) top 2410 seqs: 4.052e-27 (Corrected p-value: 6.484e-26)
-2. Fisher's exact test p-value of motif filter2  (UWUKKBU) top 2410 seqs: 1.628e-17 (Corrected p-value: 2.606e-16)
-3. Fisher's exact test p-value of motif filter9  (UUUDDRK) top 2410 seqs: 3.905e-13 (Corrected p-value: 6.248e-12)
-4. Fisher's exact test p-value of motif filter12  (KGGGDNN) top 2410 seqs: 1.92e-07 (Corrected p-value: 3.071e-06)
-5. Fisher's exact test p-value of motif filter5  (BKGSNNG) top 2410 seqs: 6.704e-07 (Corrected p-value: 1.073e-05)
-6. Fisher's exact test p-value of motif filter14  (RRRRVSG) top 2410 seqs: 1.203e-05 (Corrected p-value: 0.0001925)
+1. Fisher's exact test p-value of motif filter12  (BBCUBCY) top 2410 seqs: 2.162e-25 (Corrected p-value: 3.459e-24)
+2. Fisher's exact test p-value of motif filter7  (RCCYNHG) top 2410 seqs: 1.905e-09 (Corrected p-value: 3.048e-08)
+3. Fisher's exact test p-value of motif filter11  (WKCYDRD) top 2410 seqs: 7.693e-08 (Corrected p-value: 1.231e-06)
+4. Fisher's exact test p-value of motif filter2  (CUKMWUK) top 2410 seqs: 1.553e-05 (Corrected p-value: 0.0002484)
+5. Fisher's exact test p-value of motif filter13  (DUGWVWK) top 2410 seqs: 3.424e-05 (Corrected p-value: 0.0005477)
+6. Fisher's exact test p-value of motif filter1  (YUGRWUU) top 2410 seqs: 4.914e-05 (Corrected p-value: 0.0007859)
+7. Fisher's exact test p-value of motif filter0  (GMHGGBN) top 2410 seqs: 0.001862 (Corrected p-value: 0.02938)
