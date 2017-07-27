@@ -803,9 +803,9 @@ def detect_motifs(model, test_seqs, X_train, output_dir = 'motifs', channel = 1)
         else:
         	sele = N
         ix_all = np.arange(N)
-        	np.random.shuffle(ix_all)
+        np.random.shuffle(ix_all)
+        ix_test = ix_all[0:sele]
         
-        	ix_test = ix_all[0:sele]
         X_train = X_train[ix_test, :, :, :]
         test_seq = []
         for ind in ix_test:
