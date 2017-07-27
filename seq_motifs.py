@@ -507,7 +507,7 @@ def plot_score_density(f_scores, out_pdf):
 
     return f_scores.mean(), f_scores.std()
 
-def get_motif_fig(filter_weights, filter_outs, out_dir, protein, seqs, sample_i = 0):
+def get_motif_fig(filter_weights, filter_outs, out_dir, seqs, sample_i = 0):
     print 'plot motif fig', out_dir
     #seqs, seq_targets = get_seq_targets(protein)
     #pdb.set_trace()
@@ -607,7 +607,7 @@ def get_feature(model, X_batch, index):
     
     return activations
 
-def get_motif(filter_weights_old, filter_outs, testing, protein, y = [], index = 0, dir1 = 'motif/', structure  = None):
+def get_motif(filter_weights_old, filter_outs, testing, y = [], index = 0, dir1 = 'motif/', structure  = None):
     #sfilter = model.layers[0].layers[index].layers[0].get_weights()
     #filter_weights_old = np.transpose(sfilter[0][:,0,:,:], (2, 1, 0)) #sfilter[0][:,0,:,:]
     print filter_weights_old.shape
@@ -628,11 +628,11 @@ def get_motif(filter_weights_old, filter_outs, testing, protein, y = [], index =
     #sample_i = np.array(random.sample(xrange(testing.shape[0]), 500))
     sample_i =0
 
-    out_dir = dir1 + protein
+    out_dir = dir1
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
     if index == 0:    
-        get_motif_fig(filter_weights, filter_outs, out_dir, protein, testing, sample_i)
+        get_motif_fig(filter_weights, filter_outs, out_dir, testing, sample_i)
 
 
 
