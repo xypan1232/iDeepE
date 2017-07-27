@@ -51,3 +51,7 @@ The identified motifs (PWMs, and Weblogo) are saved to be defaulted dir motifs (
 
 # Contact
 Xiaoyong Pan: xypan172436atgmail.com
+
+
+# Updates:
+7/27/2017: add support network for DenseNet https://arxiv.org/abs/1608.06993, and fix the bug when generating binding motifs, and update the identified motifs for RBPs in GraphProt dataset.
