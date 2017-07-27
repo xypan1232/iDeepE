@@ -789,7 +789,7 @@ def get_data(posi, nega = None, channel = 5,  window_size = 101, train = True):
     return train_bags, label
 
 def detect_motifs(model, test_seqs, X_train, output_dir = 'motifs', channel = 1):
-	if channel == 1:
+    if channel == 1:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         for param in model.parameters():
