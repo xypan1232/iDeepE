@@ -792,7 +792,6 @@ def detect_motifs(model, test_seqs, X_train, output_dir = 'motifs', channel = 1)
 	if channel == 1:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-            
         for param in model.parameters():
             layer1_para =  param.data.cpu().numpy()
             break
