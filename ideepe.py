@@ -797,22 +797,22 @@ def detect_motifs(model, test_seqs, X_train, output_dir = 'motifs', channel = 1)
             break
         	#test_data = load_graphprot_data(protein, train = True)
         	#test_seqs = test_data["seq"]
-		N = len(test_seqs)
-		if N > 15000:
-			sele = 15000
-		else:
-			sele = N
-		ix_all = np.arange(N)
-    		np.random.shuffle(ix_all)
-	
-	    	ix_test = ix_all[0:sele]
-		X_train = X_train[ix_test, :, :, :]
-		test_seq = []
-		for ind in ix_test:
-			test_seq.append(test_seqs[ind])
-		test_seqs = test_seq
-		filter_outs = model.layer1out(X_train)[:,:, 0, :]
-		get_motif(layer1_para[:,0, :, :], filter_outs, test_seqs, dir1 = output_dir)
+        N = len(test_seqs)
+        if N > 15000:
+        	sele = 15000
+        else:
+        	sele = N
+        ix_all = np.arange(N)
+        	np.random.shuffle(ix_all)
+        
+        	ix_test = ix_all[0:sele]
+        X_train = X_train[ix_test, :, :, :]
+        test_seq = []
+        for ind in ix_test:
+        	test_seq.append(test_seqs[ind])
+        test_seqs = test_seq
+        filter_outs = model.layer1out(X_train)[:,:, 0, :]
+        get_motif(layer1_para[:,0, :, :], filter_outs, test_seqs, dir1 = output_dir)
 
 def train_network(model_type, X_train, y_train, channel = 5, window_size = 107, model_file = 'model.pkl', batch_size = 100, n_epochs = 50, num_filters = 16, motif = False, motif_seqs = [], motif_outdir = 'motifs'):
     print 'model training for ', model_type
