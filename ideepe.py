@@ -662,7 +662,17 @@ class DenseNet(nn.Module):
         out = self.classifier(out)
         out = F.sigmoid(out)
         return out
-
+    
+    def layer1out(self, x):
+        if type(x) is np.ndarray:
+            x = torch.from_numpy(x.astype(np.float32))
+        x = Variable(x, volatile=True)
+        if cuda:
+            x = x.cuda()
+        out = self.features[0](x)
+        temp = y.data.cpu().numpy()
+        return temp
+        
     def predict_proba(self, x):
         if type(x) is np.ndarray:
             x = torch.from_numpy(x.astype(np.float32))
