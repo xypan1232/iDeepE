@@ -561,7 +561,9 @@ class ResNet(nn.Module):
         if cuda:
             x = x.cuda()
         out = self.conv(x)
-        temp = y.data.cpu().numpy()
+        out = self.bn(out)
+        out = self.relu(out)
+        temp = out.data.cpu().numpy()
         return temp
         
     def predict_proba(self, x):
@@ -625,7 +627,7 @@ class DenseNet(nn.Module):
         self.features = nn.Sequential(OrderedDict([
             ('conv0', nn.Conv2d(channel, num_init_features, kernel_size=(4, 10), stride=1, bias=False)),
         ]))
-        
+        self.features.add_module('relu', nn.ReLU(inplace=True))
         last_size = window_size - 7
         # Each denseblock
         num_features = num_init_features
@@ -670,7 +672,8 @@ class DenseNet(nn.Module):
         if cuda:
             x = x.cuda()
         out = self.features[0](x)
-        temp = y.data.cpu().numpy()
+        out = self.features[1](out)
+        temp = out.data.cpu().numpy()
         return temp
         
     def predict_proba(self, x):
