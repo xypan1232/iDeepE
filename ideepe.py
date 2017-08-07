@@ -261,7 +261,7 @@ def get_bag_data_1_channel(data, max_len = 501):
         
     return bags, labels
 
-def batch(tensor, batch_size):
+def batch(tensor, batch_size = 1000):
     tensor_list = []
     length = tensor.shape[0]
     i = 0
