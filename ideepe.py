@@ -811,7 +811,7 @@ def detect_motifs(model, test_seqs, X_train, output_dir = 'motifs', channel = 1)
         	#test_data = load_graphprot_data(protein, train = True)
         	#test_seqs = test_data["seq"]
         N = len(test_seqs)
-        if N > 15000:
+        if N > 15000: # do need all sequence to generate motifs and avoid out-of-memory
         	sele = 15000
         else:
         	sele = N
@@ -874,7 +874,14 @@ def predict_network(model_type, X_test, channel = 5, window_size = 107, model_fi
         model = model.cuda()
                 
     model.load_state_dict(torch.load(model_file))
-    pred = model.predict_proba(X_test)
+    try:
+        pred = model.predict_proba(X_test)
+    except: #to handle the out-of-memory when testing
+        test_batch = batch(X_test)
+        pred = []
+        for test in test_batch:
+            pred_test1 = model.predict_proba(test)[:, 1]
+            pred = np.concatenate((pred, pred_test1), axis = 0)
     return pred
         
 def run_ideepe(parser):
