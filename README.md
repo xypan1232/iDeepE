@@ -1,6 +1,6 @@
 # iDeepE: Inferring RNA-protein binding sites and motifs using local and global convolutional neural network 
 <br>
-Computational algorithms for identifying RNAs that bind to specific RBPs are urgently needed, and they can complement high-cost experimental  methods. Previous methods all focus on using entire sequences for model training, and local sequence information is completely ignored. On the other hand, local sequences provide genomic context recognized by RBPs. In this study, we develop a convolutional neural network (CNN) based method called iDeepE  to predict RBP binding sites and motifs using local and global sequences. 
+Computational algorithms for identifying RNAs that bind to specific RBPs are urgently needed, and they can complement high-cost experimental  methods. Previous methods all focus on using entire sequences for model training, and local sequence information is completely ignored. On the other hand, local sequences provide genomic context recognized by RBPs. In this study, we develop a convolutional neural network (CNN) based method called iDeepE  to predict RBP binding sites and motifs using local and global sequences. For global CNNs, one of their drawback is their poor scalability with increasing sequence length. However, local CNNs break the entire seuqence to fixed-size subsequences, which can handle any long sequence 
  <br> <br>
  
 # Dependency:
