@@ -89,7 +89,7 @@ def get_RNA_seq_concolutional_array(seq, motif_len = 4):
 
 def split_overlap_seq(seq, window_size = 101):
     
-    overlap_size = 20
+    overlap_size = 50
     #pdb.set_trace()
     bag_seqs = []
     seq_len = len(seq)
@@ -209,7 +209,7 @@ def loaddata_graphprot(protein, train = True, ushuffle = True):
     
     return np.array(rna_array), label
 
-def get_bag_data(data, channel = 5, window_size = 101):
+def get_bag_data(data, channel = 7, window_size = 101):
     bags = []
     seqs = data["seq"]
     labels = data["Y"]
@@ -351,7 +351,7 @@ class Estimator(object):
         return self.model.predict_proba(X)
         
 class CNN(nn.Module):
-    def __init__(self, nb_filter, channel = 5, num_classes = 2, kernel_size = (4, 10), pool_size = (1, 3), labcounts = 32, window_size = 12, hidden_size = 200, stride = (1, 1), padding = 0):
+    def __init__(self, nb_filter, channel = 7, num_classes = 2, kernel_size = (4, 10), pool_size = (1, 3), labcounts = 32, window_size = 12, hidden_size = 200, stride = (1, 1), padding = 0):
         super(CNN, self).__init__()
         self.layer1 = nn.Sequential(
             nn.Conv2d(channel, nb_filter, kernel_size, stride = stride, padding = padding),
@@ -367,10 +367,10 @@ class CNN(nn.Module):
             nn.MaxPool2d(pool_size, stride = stride))
         out2_size = (maxpool_size + 2*padding - (kernel_size[1] - 1) - 1)/stride[1] + 1
         maxpool2_size = (out2_size + 2*padding - (pool_size[1] - 1) - 1)/stride[1] + 1
-        self.drop1 = nn.Dropout(p=0.5)
+        self.drop1 = nn.Dropout(p=0.25)
 	print 'maxpool_size', maxpool_size
         self.fc1 = nn.Linear(maxpool2_size*nb_filter, hidden_size)
-        self.drop2 = nn.Dropout(p=0.5)
+        self.drop2 = nn.Dropout(p=0.25)
         self.relu1 = nn.ReLU()
         self.fc2 = nn.Linear(hidden_size, num_classes)
         
@@ -408,7 +408,7 @@ class CNN(nn.Module):
         return temp[:, 1]
     
 class CNN_LSTM(nn.Module):
-    def __init__(self, nb_filter, channel = 5, num_classes = 2, kernel_size = (4, 10), pool_size = (1, 3), labcounts = 32, window_size = 12, hidden_size = 200, stride = (1, 1), padding = 0, num_layers = 2):
+    def __init__(self, nb_filter, channel = 7, num_classes = 2, kernel_size = (4, 10), pool_size = (1, 3), labcounts = 32, window_size = 12, hidden_size = 200, stride = (1, 1), padding = 0, num_layers = 2):
         super(CNN_LSTM, self).__init__()
         self.layer1 = nn.Sequential(
             nn.Conv2d(channel, nb_filter, kernel_size, stride = stride, padding = padding),
@@ -422,9 +422,9 @@ class CNN_LSTM(nn.Module):
         self.downsample = nn.Conv2d(nb_filter, 1, kernel_size = (1, 10), stride = stride, padding = padding)
         input_size = (maxpool_size + 2*padding - (kernel_size[1] - 1) - 1)/stride[1] + 1
         self.layer2 = nn.LSTM(input_size, hidden_size, num_layers, batch_first = True, bidirectional=True)
-        self.drop1 = nn.Dropout(p=0.5)
+        self.drop1 = nn.Dropout(p=0.25)
         self.fc1 = nn.Linear(2*hidden_size, hidden_size)
-        self.drop2 = nn.Dropout(p=0.5)
+        self.drop2 = nn.Dropout(p=0.25)
         self.relu1 = nn.ReLU()
         self.fc2 = nn.Linear(hidden_size, num_classes)
         
@@ -502,7 +502,7 @@ class ResidualBlock(nn.Module):
 
 # ResNet Module
 class ResNet(nn.Module):
-    def __init__(self, block, layers, nb_filter = 16, channel = 5, labcounts = 12, window_size = 36, kernel_size = (1, 3), pool_size = (1, 3), num_classes=2, hidden_size = 200):
+    def __init__(self, block, layers, nb_filter = 16, channel = 7, labcounts = 12, window_size = 36, kernel_size = (1, 3), pool_size = (1, 3), num_classes=2, hidden_size = 200):
         super(ResNet, self).__init__()
         self.in_channels = channel
         self.conv = convR(self.in_channels, nb_filter, kernel_size = (4, 10))
@@ -516,7 +516,7 @@ class ResNet(nn.Module):
         avgpool2_1_size = (cnn1_size - (pool_size[1] - 1) - 1)/pool_size[1] + 1
         last_layer_size = 4*nb_filter*avgpool2_1_size
         self.fc = nn.Linear(last_layer_size, hidden_size)
-        self.drop2 = nn.Dropout(p=0.5)
+        self.drop2 = nn.Dropout(p=0.25)
         self.relu1 = nn.ReLU()
         self.fc2 = nn.Linear(hidden_size, num_classes)
         
@@ -615,7 +615,7 @@ class _DenseBlock(nn.Sequential):
 
 
 class DenseNet(nn.Module):
-    def __init__(self, labcounts = 4, window_size = 107, channel = 5, growth_rate=6, block_config=(16, 16, 16), compression=0.5,
+    def __init__(self, labcounts = 4, window_size = 107, channel = 7, growth_rate=6, block_config=(16, 16, 16), compression=0.5,
                  num_init_features=12, bn_size=2, drop_rate=0, avgpool_size=(1, 8),
                  num_classes=2):
 
@@ -686,7 +686,7 @@ class DenseNet(nn.Module):
         temp = y.data.cpu().numpy()
         return temp[:, 1]
 
-def get_all_data(protein, channel = 5):
+def get_all_data(protein, channel = 7):
 
     data = load_graphprot_data(protein)
     test_data = load_graphprot_data(protein, train = False)
@@ -701,7 +701,7 @@ def get_all_data(protein, channel = 5):
 
     return train_bags, label, test_bags, true_y
 
-def run_network(model_type, X_train, test_bags, y_train, channel = 5, window_size = 107):
+def run_network(model_type, X_train, test_bags, y_train, channel = 7, window_size = 107):
     print 'model training for ', model_type
     #nb_epos= 5
     if model_type == 'CNN':
@@ -718,7 +718,7 @@ def run_network(model_type, X_train, test_bags, y_train, channel = 5, window_siz
     if cuda:
         model = model.cuda()
     clf = Estimator(model)
-    clf.compile(optimizer=torch.optim.Adam(model.parameters(), lr=1e-4),
+    clf.compile(optimizer=torch.optim.Adam(model.parameters(), lr=0.001, weight_decay = 0.0001),
                 loss=nn.CrossEntropyLoss())
     clf.fit(X_train, y_train, batch_size=100, nb_epoch=50)
     
@@ -733,7 +733,7 @@ def run_ideepe_on_graphprot(model_type = 'CNN', local = False, ensemble = False)
     start_time = timeit.default_timer()
     if local:
         window_size = 107
-        channel = 5
+        channel = 7
         lotext = 'local'
     else:
         window_size = 507
@@ -762,8 +762,8 @@ def run_ideepe_on_graphprot(model_type = 'CNN', local = False, ensemble = False)
             train_bags, train_labels, test_bags, test_labels = get_all_data(protein, channel = 1)
             predict1 = run_network(model_type, np.array(train_bags), np.array(test_bags), np.array(train_labels), channel = 1, window_size = 507)
             train_bags, train_labels, test_bags, test_labels = [], [], [], []
-            train_bags, train_labels, test_bags, test_labels = get_all_data(protein, channel = 5)
-            predict2 = run_network(model_type, np.array(train_bags), np.array(test_bags), np.array(train_labels), channel = 5, window_size = 107)
+            train_bags, train_labels, test_bags, test_labels = get_all_data(protein, channel = 7)
+            predict2 = run_network(model_type, np.array(train_bags), np.array(test_bags), np.array(train_labels), channel = 7, window_size = 107)
             predict = (predict1 + predict2)/2.0
             train_bags, train_labels, test_bags = [], [], []
         
@@ -791,7 +791,7 @@ def read_data_file(posifile, negafile = None, train = True):
     
     return data
 
-def get_data(posi, nega = None, channel = 5,  window_size = 101, train = True):
+def get_data(posi, nega = None, channel = 7,  window_size = 101, train = True):
     data = read_data_file(posi, nega, train = train)
     if channel == 1:
         train_bags, label = get_bag_data_1_channel(data, max_len = window_size)
@@ -827,7 +827,7 @@ def detect_motifs(model, test_seqs, X_train, output_dir = 'motifs', channel = 1)
         filter_outs = model.layer1out(X_train)[:,:, 0, :]
         get_motif(layer1_para[:,0, :, :], filter_outs, test_seqs, dir1 = output_dir)
 
-def train_network(model_type, X_train, y_train, channel = 5, window_size = 107, model_file = 'model.pkl', batch_size = 100, n_epochs = 50, num_filters = 16, motif = False, motif_seqs = [], motif_outdir = 'motifs'):
+def train_network(model_type, X_train, y_train, channel = 7, window_size = 107, model_file = 'model.pkl', batch_size = 100, n_epochs = 50, num_filters = 16, motif = False, motif_seqs = [], motif_outdir = 'motifs'):
     print 'model training for ', model_type
     #nb_epos= 5
     if model_type == 'CNN':
@@ -856,7 +856,7 @@ def train_network(model_type, X_train, y_train, channel = 5, window_size = 107, 
     #pred = model.predict_proba(test_bags)
     #return model
 
-def predict_network(model_type, X_test, channel = 5, window_size = 107, model_file = 'model.pkl', batch_size = 100, n_epochs = 50, num_filters = 16):
+def predict_network(model_type, X_test, channel = 7, window_size = 107, model_file = 'model.pkl', batch_size = 100, n_epochs = 50, num_filters = 16):
     print 'model training for ', model_type
     #nb_epos= 5
     if model_type == 'CNN':
@@ -954,8 +954,8 @@ def run_ideepe(parser):
             model = train_network(model_type, np.array(train_bags), np.array(train_labels), channel = 1, window_size = max_size + 6,
                                   model_file = model_file + '.global', batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters, motif = motif, motif_seqs = motif_seqs, motif_outdir = motif_outdir)
             train_bags, train_labels = [], []
-            train_bags, train_labels = get_data(posi, nega, channel = 5, window_size = window_size)
-            model = train_network(model_type, np.array(train_bags), np.array(train_labels), channel = 5, window_size = window_size + 6,
+            train_bags, train_labels = get_data(posi, nega, channel = 7, window_size = window_size)
+            model = train_network(model_type, np.array(train_bags), np.array(train_labels), channel = 7, window_size = window_size + 6,
                                         model_file = model_file + '.local', batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters, motif = motif, motif_seqs = motif_seqs, motif_outdir = motif_outdir)
 
             
@@ -969,8 +969,8 @@ def run_ideepe(parser):
         else:
             X_test, X_labels = get_data(testfile, nega = None, channel = 1, window_size = max_size)
             predict1 = predict_network(model_type, np.array(X_test), channel = 1, window_size = max_size + 6, model_file = model_file+ '.global', batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters)
-            X_test, X_labels = get_data(testfile, nega = None, channel = 5, window_size = window_size)
-            predict2 = predict_network(model_type, np.array(X_test), channel = 5, window_size = window_size + 6, model_file = model_file+ '.local', batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters)
+            X_test, X_labels = get_data(testfile, nega = None, channel = 7, window_size = window_size)
+            predict2 = predict_network(model_type, np.array(X_test), channel = 7, window_size = window_size + 6, model_file = model_file+ '.local', batch_size = batch_size, n_epochs = n_epochs, num_filters = num_filters)
                         
             predict = (predict1 + predict2)/2.0
 	#pdb.set_trace()
@@ -995,7 +995,7 @@ def parse_arguments(parser):
     parser.add_argument('--predict', type=bool, default=False,  help='Predicting the RNA-protein binding sites for your input sequences, if using train, then it will be False')
     parser.add_argument('--testfile', type=str, default='',  help='the test fast file for sequences you want to predict for, you need specify it when using predict')
     parser.add_argument('--maxsize', type=int, default=501, help='For global sequences, you need specify the maxmimum size to padding all sequences, it is only for global CNNs (default value: 501)')
-    parser.add_argument('--channel', type=int, default=5, help='The number of channels for breaking the entire RNA sequences to multiple subsequences, you can specify this value only for local CNNs (default value: 5)')
+    parser.add_argument('--channel', type=int, default=7, help='The number of channels for breaking the entire RNA sequences to multiple subsequences, you can specify this value only for local CNNs (default value: 7)')
     parser.add_argument('--window_size', type=int, default=101, help='The window size used to break the entire sequences when using local CNNs, eahc subsequence has this specified window size, default 101')
     parser.add_argument('--local', type=bool, default=False, help='Only local multiple channel CNNs for local subsequences')
     parser.add_argument('--glob', type=bool, default=False, help='Only global multiple channel CNNs for local subsequences')
