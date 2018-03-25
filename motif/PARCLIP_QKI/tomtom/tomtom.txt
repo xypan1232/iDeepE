@@ -1,4 +1,1 @@
 #Query ID	Target ID	Optimal offset	p-value	E-value	q-value	Overlap	Query consensus	Target consensus	Orientation
-filter2	RNCMPT00043	0	0.00048819	0.0497953	0.0473245	7	AUAAAAA	AAAAAAA	+
-filter7	RNCMPT00084	1	0.000165847	0.0169164	0.0150238	6	ACAACUA	AACAACA	+
-filter12	RNCMPT00053	0	4.83665e-05	0.00493338	0.00468829	7	UUAAAUU	AUACAUU	+

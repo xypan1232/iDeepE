@@ -10,10 +10,11 @@ Not in partition maximization mode. Fixing partition at the number of primary se
 Threshold p-value for reporting results: 0.05
 Motif p-values are corrected by #Motifs * #ThresholdsTested - (16 * 1 = 16)
 
-1. Fisher's exact test p-value of motif filter2  (AWAAAAA) top 19418 seqs: 1.246e-135 (Corrected p-value: 1.993e-134)
-2. Fisher's exact test p-value of motif filter6  (UGSNDGV) top 19418 seqs: 2.934e-67 (Corrected p-value: 4.695e-66)
-3. Fisher's exact test p-value of motif filter13  (WRAAAAG) top 19418 seqs: 3.08e-62 (Corrected p-value: 4.928e-61)
-4. Fisher's exact test p-value of motif filter3  (WCUGAMW) top 19418 seqs: 1.232e-31 (Corrected p-value: 1.972e-30)
-5. Fisher's exact test p-value of motif filter8  (AGWGVMR) top 19418 seqs: 1.754e-20 (Corrected p-value: 2.806e-19)
-6. Fisher's exact test p-value of motif filter1  (RHUAAUD) top 19418 seqs: 9.286e-20 (Corrected p-value: 1.486e-18)
-7. Fisher's exact test p-value of motif filter15  (KGSWGVW) top 19418 seqs: 0.0001592 (Corrected p-value: 0.002543)
+1. Fisher's exact test p-value of motif filter2  (DASGCBD) top 19418 seqs: 4.636e-139 (Corrected p-value: 7.417e-138)
+2. Fisher's exact test p-value of motif filter14  (YUUMAYW) top 19418 seqs: 3.539e-64 (Corrected p-value: 5.662e-63)
+3. Fisher's exact test p-value of motif filter10  (HACCHDK) top 19418 seqs: 4.983e-33 (Corrected p-value: 7.973e-32)
+4. Fisher's exact test p-value of motif filter6  (YWGMYMA) top 19418 seqs: 9.115e-25 (Corrected p-value: 1.458e-23)
+5. Fisher's exact test p-value of motif filter0  (URACVGD) top 19418 seqs: 4.153e-18 (Corrected p-value: 6.644e-17)
+6. Fisher's exact test p-value of motif filter13  (NWGWKHW) top 19418 seqs: 1.944e-16 (Corrected p-value: 3.111e-15)
+7. Fisher's exact test p-value of motif filter15  (GHMWCUW) top 19418 seqs: 1.332e-08 (Corrected p-value: 2.131e-07)
+8. Fisher's exact test p-value of motif filter12  (UVUKBNA) top 19418 seqs: 7.997e-08 (Corrected p-value: 1.28e-06)

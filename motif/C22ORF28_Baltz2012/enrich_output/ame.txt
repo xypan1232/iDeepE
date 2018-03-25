@@ -10,10 +10,8 @@ Not in partition maximization mode. Fixing partition at the number of primary se
 Threshold p-value for reporting results: 0.05
 Motif p-values are corrected by #Motifs * #ThresholdsTested - (16 * 1 = 16)
 
-1. Fisher's exact test p-value of motif filter4  (SMSMHGG) top 18505 seqs: 6.221e-159 (Corrected p-value: 9.953e-158)
-2. Fisher's exact test p-value of motif filter6  (VSAKGWS) top 18505 seqs: 2.038e-115 (Corrected p-value: 3.261e-114)
-3. Fisher's exact test p-value of motif filter9  (CMCAGSK) top 18505 seqs: 3.776e-115 (Corrected p-value: 6.042e-114)
-4. Fisher's exact test p-value of motif filter14  (HYYUKWU) top 18505 seqs: 5.212e-69 (Corrected p-value: 8.339e-68)
-5. Fisher's exact test p-value of motif filter3  (KKKKKUU) top 18505 seqs: 4.737e-25 (Corrected p-value: 7.58e-24)
-6. Fisher's exact test p-value of motif filter8  (AAGWKWU) top 18505 seqs: 8.121e-15 (Corrected p-value: 1.299e-13)
-7. Fisher's exact test p-value of motif filter15  (HBAGGUS) top 18505 seqs: 1.845e-06 (Corrected p-value: 2.952e-05)
+1. Fisher's exact test p-value of motif filter6  (UUHUYUU) top 18505 seqs: 1.695e-302 (Corrected p-value: 2.712e-301)
+2. Fisher's exact test p-value of motif filter2  (MGSSYKG) top 18505 seqs: 1.56e-45 (Corrected p-value: 2.496e-44)
+3. Fisher's exact test p-value of motif filter4  (WBCHNMY) top 18505 seqs: 1.594e-28 (Corrected p-value: 2.55e-27)
+4. Fisher's exact test p-value of motif filter11  (GNHKGWG) top 18505 seqs: 4.084e-24 (Corrected p-value: 6.534e-23)
+5. Fisher's exact test p-value of motif filter14  (GMCHVRG) top 18505 seqs: 0.0001788 (Corrected p-value: 0.002857)

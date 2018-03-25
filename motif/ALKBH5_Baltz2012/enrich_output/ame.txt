@@ -8,12 +8,9 @@ ame --control shuff_seq -o motifs/ALKBH5_Baltz2012/enrich_output seq_enrich moti
 Not in partition maximization mode. Fixing partition at the number of primary sequences (2410).
 
 Threshold p-value for reporting results: 0.05
-Motif p-values are corrected by #Motifs * #ThresholdsTested - (16 * 1 = 16)
+Motif p-values are corrected by #Motifs * #ThresholdsTested - (15 * 1 = 15)
 
-1. Fisher's exact test p-value of motif filter12  (BBCUBCY) top 2410 seqs: 2.162e-25 (Corrected p-value: 3.459e-24)
-2. Fisher's exact test p-value of motif filter7  (RCCYNHG) top 2410 seqs: 1.905e-09 (Corrected p-value: 3.048e-08)
-3. Fisher's exact test p-value of motif filter11  (WKCYDRD) top 2410 seqs: 7.693e-08 (Corrected p-value: 1.231e-06)
-4. Fisher's exact test p-value of motif filter2  (CUKMWUK) top 2410 seqs: 1.553e-05 (Corrected p-value: 0.0002484)
-5. Fisher's exact test p-value of motif filter13  (DUGWVWK) top 2410 seqs: 3.424e-05 (Corrected p-value: 0.0005477)
-6. Fisher's exact test p-value of motif filter1  (YUGRWUU) top 2410 seqs: 4.914e-05 (Corrected p-value: 0.0007859)
-7. Fisher's exact test p-value of motif filter0  (GMHGGBN) top 2410 seqs: 0.001862 (Corrected p-value: 0.02938)
+1. Fisher's exact test p-value of motif filter13  (MHKCWGA) top 2410 seqs: 9.495e-30 (Corrected p-value: 1.424e-28)
+2. Fisher's exact test p-value of motif filter4  (CMCRKGN) top 2410 seqs: 1.936e-24 (Corrected p-value: 2.903e-23)
+3. Fisher's exact test p-value of motif filter7  (AADWWWD) top 2410 seqs: 8.525e-07 (Corrected p-value: 1.279e-05)
+4. Fisher's exact test p-value of motif filter0  (SKMCWUS) top 2410 seqs: 0.0003661 (Corrected p-value: 0.005478)

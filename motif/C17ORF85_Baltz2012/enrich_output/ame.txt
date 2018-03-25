@@ -10,13 +10,8 @@ Not in partition maximization mode. Fixing partition at the number of primary se
 Threshold p-value for reporting results: 0.05
 Motif p-values are corrected by #Motifs * #ThresholdsTested - (16 * 1 = 16)
 
-1. Fisher's exact test p-value of motif filter0  (ARNDGVW) top 3709 seqs: 7.196e-20 (Corrected p-value: 1.151e-18)
-2. Fisher's exact test p-value of motif filter14  (CAGSCCC) top 3709 seqs: 1.466e-19 (Corrected p-value: 2.346e-18)
-3. Fisher's exact test p-value of motif filter4  (SVSWGGS) top 3709 seqs: 1.95e-17 (Corrected p-value: 3.12e-16)
-4. Fisher's exact test p-value of motif filter5  (UCYMCCU) top 3709 seqs: 2.54e-11 (Corrected p-value: 4.064e-10)
-5. Fisher's exact test p-value of motif filter9  (YKGCUGM) top 3709 seqs: 8.699e-08 (Corrected p-value: 1.392e-06)
-6. Fisher's exact test p-value of motif filter13  (UBGNKGA) top 3709 seqs: 4.617e-07 (Corrected p-value: 7.386e-06)
-7. Fisher's exact test p-value of motif filter6  (DHMCCKS) top 3709 seqs: 1.179e-05 (Corrected p-value: 0.0001886)
-8. Fisher's exact test p-value of motif filter2  (KRMGSGG) top 3709 seqs: 2.505e-05 (Corrected p-value: 0.0004008)
-9. Fisher's exact test p-value of motif filter7  (HCHGKUC) top 3709 seqs: 0.001391 (Corrected p-value: 0.02203)
-10. Fisher's exact test p-value of motif filter3  (DUGAAMV) top 3709 seqs: 0.001967 (Corrected p-value: 0.03101)
+1. Fisher's exact test p-value of motif filter12  (YCAGSCM) top 3709 seqs: 5.966e-44 (Corrected p-value: 9.546e-43)
+2. Fisher's exact test p-value of motif filter11  (MDGCUBY) top 3709 seqs: 7.173e-33 (Corrected p-value: 1.148e-31)
+3. Fisher's exact test p-value of motif filter3  (WCCWCVG) top 3709 seqs: 4.412e-11 (Corrected p-value: 7.059e-10)
+4. Fisher's exact test p-value of motif filter14  (USGVSCM) top 3709 seqs: 1.099e-05 (Corrected p-value: 0.0001759)
+5. Fisher's exact test p-value of motif filter8  (VYNNDWG) top 3709 seqs: 8.853e-05 (Corrected p-value: 0.001416)
