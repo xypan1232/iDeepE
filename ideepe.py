@@ -89,7 +89,7 @@ def get_RNA_seq_concolutional_array(seq, motif_len = 4):
 
 def split_overlap_seq(seq, window_size = 101):
     
-    overlap_size = 50
+    overlap_size = 20
     #pdb.set_trace()
     bag_seqs = []
     seq_len = len(seq)
