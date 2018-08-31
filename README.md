@@ -52,6 +52,10 @@ The identified motifs (PWMs, and Weblogo) are saved to be defaulted dir motifs (
 # Contact
 Xiaoyong Pan: xypan172436atgmail.com
 
+# Reference
+ <p><b>Xiaoyong Pan^</b>, Hong-Bin Shen^. <a href="https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/bty364/4990826">Predicting RNA-protein binding sites and motifs through combining local and global deep convolutional neural networks</a>. Bioinformatics. In press. </p>
 
 # Updates:
 7/27/2017: add support network for DenseNet https://arxiv.org/abs/1608.06993, and fix the bug when generating binding motifs, and update the identified motifs for RBPs in GraphProt dataset.
+
+
