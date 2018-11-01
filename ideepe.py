@@ -726,7 +726,7 @@ def run_network(model_type, X_train, test_bags, y_train, channel = 7, window_siz
     pred = model.predict_proba(test_bags)
     return pred, model
 
-def run_ideepe_on_graphprot(model_type = 'CNN', local = False, ensemble = False):
+def run_ideepe_on_graphprot(model_type = 'CNN', local = False, ensemble = True):
     data_dir = './GraphProt_CLIP_sequences/'
     
     finished_protein = set()
