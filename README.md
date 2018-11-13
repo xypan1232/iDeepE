@@ -39,7 +39,7 @@ For ensembling models, it will save 'model.pkl.local' and 'model.pkl.global' for
 2. python ideepe.py --testfile=GraphProt_CLIP_sequences/ALKBH5_Baltz2012.ls.positives.fa --model_type=CNN --model_file=model.pkl --predict=True 
 <br>
 
-testfile is your input fasta sequences file, and the predicted outputs for all sequences will be defaulted saved in "prediction.txt". The value in each line corresponds to the probability of being RBP binding site for the sequence in fasta file
+testfile is your input fasta sequences file, and the predicted outputs for all sequences will be defaulted saved in "prediction.txt". The value in each line corresponds to the probability of being RBP binding site for the sequence in fasta file. NOTE:if you have positive and negative sequecnes, please put them in the same sequecne file, which is fed into model for prediciton. DO NOT predict probability for positive and negative sequence seperately in two fasta files, then combine the prediction.
 
 # Identify motifs:
 You need install WebLogo (http://weblogo.berkeley.edu/) and TOMTOM in MEME Suite(http://meme-suite.org/doc/download.html?man_type=web) to search identifyed motifs against known motifs of RBPs. And also you need has positive and negative sequences when using motif option. <br> 
