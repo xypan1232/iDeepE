@@ -304,7 +304,7 @@ class Estimator(object):
             self.optimizer.step()
 
             ## for log
-            loss_list.append(loss.data[0])
+            loss_list.append(loss.data[0]) # need change to loss_list.append(loss.item()) for pytorch v0.4 or above
 
         return sum(loss_list) / len(loss_list)
 
