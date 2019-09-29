@@ -49,6 +49,9 @@ You need install WebLogo (http://weblogo.berkeley.edu/) and TOMTOM in MEME Suite
 
 The identified motifs (PWMs, and Weblogo) are saved to be defaulted dir motifs (you can also use --motif_dir to configure your dir for motifs), and also include the report from TOMTOM.
 
+# NOTE
+When you train iDeepE on your own constructed benchmark dataset, if the training loss cannot converge, may other optimization methods, like SGD or RMSprop can be used to replace Adam in the code. 
+
 # Contact
 Xiaoyong Pan: xypan172436atgmail.com
 
