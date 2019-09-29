@@ -5,7 +5,7 @@ Computational algorithms for identifying RNAs that bind to specific RBPs are urg
  
 # Dependency:
 python 2.7 <br>
-PyTorch 0.1.11 (http://pytorch.org/ ) <br>
+PyTorch 0.1.11 (http://pytorch.org/ ) : you just need change loss_list.append(loss.data[0]) to loss_list.append(loss.item()) in the code for pytorch v0.4 or above.<br>
 Sklearn (https://github.com/scikit-learn/scikit-learn)
 
 
